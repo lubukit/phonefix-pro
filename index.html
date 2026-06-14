@@ -1,0 +1,2568 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#AEEF00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhoneFix Pro">
+<meta name="description" content="Sistem pengurusan repair telefon oleh LUBUK IT">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>PhoneFix Pro</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --brand-lime:#AEEF00;
+  --brand-lime-dark:#7FB800;
+  --brand-black:#050505;
+  --brand-ink:#111020;
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f5f5f0;
+  --color-background-tertiary:#eeede8;
+  --color-text-primary:#1a1a18;
+  --color-text-secondary:#6b6a66;
+  --color-text-tertiary:#a09f9b;
+  --color-border-tertiary:rgba(0,0,0,0.12);
+  --color-border-secondary:rgba(0,0,0,0.22);
+  --color-border-primary:rgba(0,0,0,0.35);
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'SF Mono','Fira Code',monospace;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --color-background-primary:#1e1e1c;
+    --color-background-secondary:#2a2a28;
+    --color-background-tertiary:#242422;
+    --color-text-primary:#f0efeb;
+    --color-text-secondary:#a09f9b;
+    --color-text-tertiary:#6b6a66;
+    --color-border-tertiary:rgba(255,255,255,0.1);
+    --color-border-secondary:rgba(255,255,255,0.18);
+    --color-border-primary:rgba(255,255,255,0.3);
+  }
+}
+body.theme-light{
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f5f5f0;
+  --color-background-tertiary:#eeede8;
+  --color-text-primary:#1a1a18;
+  --color-text-secondary:#6b6a66;
+  --color-text-tertiary:#a09f9b;
+  --color-border-tertiary:rgba(0,0,0,0.12);
+  --color-border-secondary:rgba(0,0,0,0.22);
+  --color-border-primary:rgba(0,0,0,0.35);
+}
+body.theme-dark{
+  --color-background-primary:#1e1e1c;
+  --color-background-secondary:#2a2a28;
+  --color-background-tertiary:#242422;
+  --color-text-primary:#f0efeb;
+  --color-text-secondary:#a09f9b;
+  --color-text-tertiary:#6b6a66;
+  --color-border-tertiary:rgba(255,255,255,0.1);
+  --color-border-secondary:rgba(255,255,255,0.18);
+  --color-border-primary:rgba(255,255,255,0.3);
+}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+.app-wrap{flex:1;display:flex;flex-direction:column;max-width:430px;width:100%;margin:0 auto;position:relative;overflow:hidden;}
+.scr{flex:1;overflow:hidden;position:relative;}
+.pg{display:none;flex-direction:column;height:100%;position:absolute;width:100%;top:0;left:0;}
+.pg.act{display:flex;}
+.sa{flex:1;overflow-y:auto;padding:10px 12px;-webkit-overflow-scrolling:touch;}
+.sa::-webkit-scrollbar{display:none;}
+.tb{background:var(--color-background-primary);padding:env(safe-area-inset-top,12px) 13px 9px;padding-top:max(env(safe-area-inset-top),12px);border-bottom:.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tb h1{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.tb .sub{font-size:9px;color:var(--color-text-secondary);margin-top:1px;}
+.ib{width:30px;height:30px;border-radius:7px;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
+.ib svg{width:16px;height:16px;stroke:var(--color-text-secondary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.bnav-wrap{background:var(--color-background-primary);border-top:.5px solid var(--color-border-tertiary);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
+.bnav{display:flex;padding:5px 0 2px;}
+.nt{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:3px 0;}
+.nt svg{width:18px;height:18px;stroke:var(--color-text-tertiary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nt span{font-size:8px;color:var(--color-text-tertiary);}
+.nt.on svg{stroke:#7FB800;}
+.nt.on span{color:#7FB800;}
+.trademark{text-align:center;padding:2px 0 3px;font-size:8px;color:var(--color-text-tertiary);letter-spacing:0.02em;}
+.trademark span{color:#7FB800;font-weight:500;}
+.card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:12px;padding:9px 11px;margin-bottom:7px;}
+.card h3{font-size:9px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;}
+.mg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:7px;}
+.mt{background:var(--color-background-secondary);border-radius:7px;padding:9px 10px;}
+.mt .ml{font-size:9px;color:var(--color-text-secondary);margin-bottom:2px;}
+.mt .mv{font-size:17px;font-weight:500;color:var(--color-text-primary);}
+.mt .ms{font-size:9px;color:var(--color-text-tertiary);margin-top:1px;}
+.bdg{font-size:9px;font-weight:500;padding:2px 6px;border-radius:20px;}
+.b1{background:#E6F1FB;color:#0C447C;}
+.b2{background:#FAEEDA;color:#633806;}
+.b3{background:#EAF3DE;color:#27500A;}
+.b4{background:#ECFFD1;color:#1A1A18;}
+.b5{background:#FCEBEB;color:#791F1F;}
+.tk{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:11px;padding:9px 10px;margin-bottom:6px;cursor:pointer;}
+.tk-r{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.tk-id{font-size:9px;color:var(--color-text-tertiary);font-family:var(--font-mono);}
+.tk-m{display:flex;gap:7px;margin-bottom:5px;align-items:flex-start;}
+.dico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tnm{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:1px;}
+.tsb{font-size:10px;color:var(--color-text-secondary);}
+.tk-b{display:flex;justify-content:space-between;align-items:center;}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:.5px solid var(--color-border-tertiary);}
+.dr:last-child{border-bottom:none;}
+.dl{font-size:11px;color:var(--color-text-secondary);}
+.dv{font-size:11px;font-weight:500;color:var(--color-text-primary);}
+.ff{margin-bottom:8px;}
+.ff label{display:block;font-size:10px;color:var(--color-text-secondary);margin-bottom:3px;}
+.ff input,.ff select,.ff textarea{width:100%;padding:8px 10px;border-radius:7px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:12px;color:var(--color-text-primary);font-family:var(--font-sans);-webkit-appearance:none;}
+.ff textarea{min-height:50px;resize:none;}
+.sbtn{width:100%;padding:11px;border-radius:11px;background:#7FB800;color:#ECFFD1;border:none;font-size:12px;font-weight:500;cursor:pointer;margin-top:3px;}
+.sbtn2{width:100%;padding:9px;border-radius:11px;background:var(--color-background-secondary);color:var(--color-text-primary);border:.5px solid var(--color-border-secondary);font-size:12px;font-weight:500;cursor:pointer;margin-top:5px;}
+.pill-row{display:flex;gap:4px;overflow-x:auto;padding-bottom:5px;margin-bottom:6px;-webkit-overflow-scrolling:touch;}
+.pill-row::-webkit-scrollbar{display:none;}
+.pill{white-space:nowrap;font-size:10px;padding:4px 8px;border-radius:20px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;flex-shrink:0;}
+.pill.on{background:#ECFFD1;color:#1A1A18;border-color:#B6F000;font-weight:500;}
+.fab{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border-radius:50%;background:#7FB800;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9;box-shadow:0 2px 8px rgba(174,239,0,0.35);}
+.fab svg{width:20px;height:20px;stroke:#ECFFD1;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.bk{display:flex;align-items:center;gap:4px;cursor:pointer;}
+.bk svg{width:18px;height:18px;stroke:var(--color-text-secondary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.bk span{font-size:12px;color:var(--color-text-secondary);}
+.bar-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.bar-lbl{font-size:10px;color:var(--color-text-secondary);width:50px;text-align:right;flex-shrink:0;}
+.bar-track{flex:1;background:var(--color-background-secondary);border-radius:3px;height:6px;}
+.bar-fill{height:6px;border-radius:3px;}
+.bar-val{font-size:10px;font-weight:500;color:var(--color-text-primary);width:22px;}
+.alert-box{border-radius:7px;padding:7px 9px;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.alert-red{background:#FCEBEB;border:.5px solid #F09595;}
+.alert-red svg{flex-shrink:0;width:14px;height:14px;stroke:#A32D2D;fill:none;stroke-width:2;}
+.alert-red span{font-size:10px;color:#791F1F;}
+.alert-amb{background:#FAEEDA;border:.5px solid #FAC775;}
+.alert-amb svg{flex-shrink:0;width:14px;height:14px;stroke:#854F0B;fill:none;stroke-width:2;}
+.alert-amb span{font-size:10px;color:#633806;}
+.stk-row{background:var(--color-background-secondary);border-radius:7px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.stk-nm{font-size:11px;font-weight:500;color:var(--color-text-primary);}
+.stk-sb{font-size:9px;color:var(--color-text-secondary);margin-top:1px;}
+.pos-row{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:9px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.item-main{display:flex;align-items:center;gap:8px;min-width:0;}
+.item-ico{width:31px;height:31px;border-radius:8px;background:#ECFFD1;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.item-meta{font-size:9px;color:var(--color-text-tertiary);margin-top:2px;line-height:1.35;}
+.profit-good{color:#3B6D11!important;}
+.profit-warn{color:#854F0B!important;}
+.learn-card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:11px;padding:10px 11px;margin-bottom:7px;}
+.learn-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;}
+.learn-img{width:44px;height:44px;border-radius:10px;background:#ECFFD1;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.learn-title{font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:2px;}
+.learn-sub{font-size:10px;color:var(--color-text-secondary);line-height:1.4;}
+.learn-list{margin:6px 0 0 14px;color:var(--color-text-secondary);font-size:10px;line-height:1.55;}
+.learn-note{background:#FAEEDA;border:.5px solid #FAC775;border-radius:8px;padding:7px 8px;font-size:10px;color:#633806;line-height:1.45;margin-top:7px;}
+.import-file{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+.qty-c{display:flex;align-items:center;gap:5px;}
+.qb{width:24px;height:24px;border-radius:5px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-primary);}
+.qn{font-size:12px;font-weight:500;min-width:14px;text-align:center;color:var(--color-text-primary);}
+.tl-it{display:flex;gap:7px;padding-bottom:9px;}
+.tl-it:last-child{padding-bottom:0;}
+.tl-col{display:flex;flex-direction:column;align-items:center;}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.tl-ln{width:1.5px;flex:1;margin-top:2px;}
+.tl-dot.dn{background:#639922;}.tl-ln.dn{background:#C0DD97;}
+.tl-dot.ac{background:#7FB800;}.tl-ln.ac{background:#DFFF7A;}
+.tl-dot.pd{background:var(--color-border-secondary);}.tl-ln.pd{background:var(--color-border-tertiary);}
+.ab{display:flex;align-items:center;gap:7px;width:100%;padding:9px 10px;border-radius:9px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);margin-bottom:5px;cursor:pointer;}
+.ab svg{flex-shrink:0;width:16px;height:16px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.ab span{font-size:11px;font-weight:500;color:var(--color-text-primary);}
+.rpt-big{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:11px;padding:12px;margin-bottom:7px;text-align:center;}
+.rpt-big .rl{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px;}
+.rpt-big .rv{font-size:24px;font-weight:500;color:#7FB800;}
+.rpt-big .rs{font-size:9px;color:var(--color-text-tertiary);margin-top:1px;}
+.lang-tog{display:flex;background:var(--color-background-secondary);border-radius:20px;padding:3px;gap:3px;margin-bottom:9px;}
+.lb{flex:1;padding:6px;border-radius:16px;border:none;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--color-text-secondary);}
+.lb.on{background:var(--color-background-primary);color:#7FB800;border:.5px solid var(--color-border-secondary);}
+.ai-box{background:#ECFFD1;border:.5px solid #B6F000;border-radius:10px;padding:10px 11px;margin-bottom:7px;}
+.ai-t{font-size:10px;font-weight:500;color:#1A1A18;margin-bottom:3px;}
+.ai-c{font-size:11px;color:#7FB800;line-height:1.5;}
+.star{font-size:20px;color:var(--color-border-secondary);cursor:pointer;}
+.star.on{color:#BA7517;}
+.feat-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;background:var(--color-background-secondary);border-radius:7px;padding:6px 8px;}
+.feat-row input{flex:1;border:none;background:transparent;font-size:11px;color:var(--color-text-primary);font-family:var(--font-sans);padding:0;}
+.feat-row input:focus{outline:none;}
+.rm-btn{width:18px;height:18px;border-radius:50%;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:11px;color:var(--color-text-tertiary);}
+.cust-card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:11px;padding:9px 10px;margin-bottom:5px;cursor:pointer;}
+.toast-w{padding:0 12px;padding-top:5px;min-height:0;flex-shrink:0;}
+.toast{background:#7FB800;color:#ECFFD1;border-radius:9px;padding:8px 11px;font-size:11px;display:none;}
+.toast.on{display:block;}
+.login-overlay{position:fixed;inset:0;background:linear-gradient(180deg,#7FB800,#111410);z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;}
+.login-overlay.on{display:flex;}
+.login-card{width:min(360px,100%);background:var(--color-background-primary);border-radius:14px;padding:18px;border:.5px solid rgba(255,255,255,.2);box-shadow:0 20px 60px rgba(0,0,0,.22);}
+.login-logo{width:52px;height:52px;border-radius:15px;background:#ECFFD1;color:#1A1A18;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.login-title{text-align:center;font-size:20px;font-weight:700;color:var(--color-text-primary);}
+.login-sub{text-align:center;font-size:11px;color:var(--color-text-secondary);margin:4px 0 14px;line-height:1.4;}
+.role-badge{font-size:9px;font-weight:600;padding:3px 7px;border-radius:999px;background:#ECFFD1;color:#1A1A18;border:.5px solid #B6F000;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#a09f9b;display:inline-block;margin-right:5px;}
+.sync-dot.on{background:#3B6D11;}
+.sync-dot.err{background:#A32D2D;}
+.admin-only.staff-hidden{display:none!important;}
+.cost-sensitive.staff-hidden{display:none!important;}
+.scan-overlay{position:absolute;inset:0;background:rgba(0,0,0,.78);z-index:50;display:none;flex-direction:column;padding:14px;color:#fff;}
+.scan-overlay.on{display:flex;}
+.scan-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.scan-head h2{font-size:15px;font-weight:600;}
+.scan-close{width:30px;height:30px;border-radius:7px;border:.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer;}
+.scan-box{position:relative;background:#111;border-radius:12px;overflow:hidden;aspect-ratio:1;margin-bottom:10px;border:.5px solid rgba(255,255,255,.28);}
+.scan-box video{width:100%;height:100%;object-fit:cover;}
+.scan-frame{position:absolute;inset:22%;border:2px solid #B6F000;border-radius:12px;box-shadow:0 0 0 999px rgba(0,0,0,.25);}
+.scan-status{font-size:11px;line-height:1.45;color:rgba(255,255,255,.82);margin-bottom:9px;}
+.scan-manual{background:rgba(255,255,255,.1);border:.5px solid rgba(255,255,255,.2);border-radius:11px;padding:10px;margin-top:auto;}
+.scan-manual input{width:100%;padding:9px 10px;border-radius:8px;border:.5px solid rgba(255,255,255,.3);background:rgba(0,0,0,.25);color:#fff;font-size:12px;margin:6px 0 8px;}
+.pay-overlay{position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:60;display:none;align-items:flex-end;padding:12px;color:var(--color-text-primary);}
+.pay-overlay.on{display:flex;}
+.pay-panel{width:100%;max-height:92%;overflow-y:auto;background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:14px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.35);}
+.pay-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.pay-head h2{font-size:15px;font-weight:600;color:var(--color-text-primary);}
+.pay-qr{width:150px;height:150px;margin:8px auto;border-radius:10px;background:#fff;border:8px solid #fff;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:2px;box-shadow:0 0 0 .5px var(--color-border-secondary);}
+.pay-qr span{background:#111;border-radius:1px;}
+.pay-qr span:nth-child(3n){background:#fff;}
+.pay-qr span:nth-child(5n){background:#111;}
+.pay-qr span:nth-child(1),.pay-qr span:nth-child(2),.pay-qr span:nth-child(3),.pay-qr span:nth-child(10),.pay-qr span:nth-child(12),.pay-qr span:nth-child(19),.pay-qr span:nth-child(20),.pay-qr span:nth-child(21),.pay-qr span:nth-child(7),.pay-qr span:nth-child(8),.pay-qr span:nth-child(9),.pay-qr span:nth-child(16),.pay-qr span:nth-child(18),.pay-qr span:nth-child(25),.pay-qr span:nth-child(26),.pay-qr span:nth-child(27),.pay-qr span:nth-child(55),.pay-qr span:nth-child(56),.pay-qr span:nth-child(57),.pay-qr span:nth-child(64),.pay-qr span:nth-child(66),.pay-qr span:nth-child(73),.pay-qr span:nth-child(74),.pay-qr span:nth-child(75){background:#111;}
+.pay-qr img{width:100%;height:100%;object-fit:contain;border-radius:4px;grid-column:1/-1;grid-row:1/-1;}
+.pay-bank{text-align:center;background:var(--color-background-secondary);border-radius:11px;padding:9px;margin-bottom:8px;}
+.pay-bank .name{font-size:12px;font-weight:700;color:var(--color-text-primary);}
+.pay-bank .acc{font-size:18px;font-weight:700;color:#7FB800;margin:2px 0;font-family:var(--font-mono);}
+.pay-bank .holder{font-size:10px;color:var(--color-text-secondary);}
+.pay-total{display:flex;align-items:center;justify-content:space-between;background:#ECFFD1;border:.5px solid #B6F000;border-radius:11px;padding:10px;margin:8px 0;color:#1A1A18;}
+.pay-total span:first-child{font-size:11px;font-weight:600;}
+.pay-total span:last-child{font-size:20px;font-weight:800;}
+.pay-close{width:30px;height:30px;border-radius:8px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:18px;cursor:pointer;}
+.status-overlay{position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:65;display:none;align-items:flex-end;padding:12px;color:var(--color-text-primary);}
+.status-overlay.on{display:flex;}
+.status-panel{width:100%;max-height:92%;overflow-y:auto;background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:14px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.35);}
+.status-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.status-head h2{font-size:15px;font-weight:600;color:var(--color-text-primary);}
+.qr-preview{display:none;width:118px;height:118px;object-fit:contain;background:#fff;border:6px solid #fff;border-radius:10px;margin:6px auto;border:.5px solid var(--color-border-secondary);}
+.qr-preview.on{display:block;}
+.evidence-box{background:var(--color-background-secondary);border:.5px dashed var(--color-border-secondary);border-radius:11px;padding:10px;margin-bottom:8px;}
+.evidence-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:7px;}
+.evidence-preview{display:none;width:100%;border-radius:10px;margin-top:8px;border:.5px solid var(--color-border-tertiary);}
+.evidence-preview.on{display:block;}
+.splash{position:fixed;inset:0;background:#7FB800;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .5s;}
+.splash.hide{opacity:0;pointer-events:none;}
+.splash-logo{width:72px;height:72px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.splash-logo svg{width:40px;height:40px;stroke:#ECFFD1;fill:none;stroke-width:1.8;}
+.splash h1{font-size:22px;font-weight:500;color:#ECFFD1;margin-bottom:6px;}
+.splash p{font-size:12px;color:rgba(238,237,254,0.7);}
+.section-hdr{font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px;}
+.brand-head{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.brand-wordmark{display:block;height:28px;width:auto;max-width:190px;object-fit:contain;}
+.brand-wordmark.header-logo{height:30px;max-width:205px;}
+.brand-wordmark.login-word{height:32px;margin:0 auto 7px;max-width:230px;}
+.brand-icon{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit;}
+body.theme-dark .brand-head .brand-wordmark{content:url('assets/brand/name-brand-white.png');}
+body.theme-dark .login-word{content:url('assets/brand/name-brand-white.png');}
+@media(prefers-color-scheme:dark){body:not(.theme-light) .brand-head .brand-wordmark,body:not(.theme-light) .login-word{content:url('assets/brand/name-brand-white.png');}}
+body.theme-light .login-word{content:url('assets/brand/name-brand-black.png');}
+.sbtn,.fab{background:var(--brand-lime)!important;color:var(--brand-black)!important;font-weight:700;}
+.sbtn svg,.fab svg{stroke:var(--brand-black)!important;}
+.nt.on svg{stroke:var(--brand-lime-dark)!important;}
+.nt.on span,.trademark span,.rpt-big .rv,.pay-bank .acc{color:var(--brand-lime-dark)!important;}
+.pill.on,.role-badge,.b4,.ai-box,.pay-total{background:#ECFFD1!important;border-color:var(--brand-lime)!important;color:var(--brand-ink)!important;}
+.ai-t,.ai-c{color:var(--brand-ink)!important;}
+.toast{background:var(--brand-black)!important;color:var(--brand-lime)!important;}
+.login-overlay{background:linear-gradient(180deg,var(--brand-black),#111410)!important;}
+.login-logo{width:64px;height:64px;border-radius:16px;background:var(--brand-lime)!important;overflow:hidden;}
+.splash{background:var(--brand-black)!important;padding:26px;}
+.splash-logo{width:88px;height:88px;background:var(--brand-lime)!important;border-radius:22px;overflow:hidden;}
+.splash-logo svg{display:none;}
+.splash h1{font-size:0;line-height:0;margin:0 0 8px;}
+.splash h1::after{content:'';display:block;width:min(290px,72vw);height:53px;background:url('assets/brand/name-brand-white.png') center/contain no-repeat;}
+.splash p{color:rgba(255,255,255,.72)!important;}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="splash-logo">
+    <img class="brand-icon" src="assets/brand/primary.png" alt="PhoneFix Pro">
+  </div>
+  <h1>PhoneFix Pro</h1>
+  <p>by LUBUK IT</p>
+</div>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">
+      <img class="brand-icon" src="assets/brand/primary.png" alt="PhoneFix Pro">
+    </div>
+    <img class="brand-wordmark login-word" src="assets/brand/name-brand-black.png" alt="PhoneFix Pro">
+    <div class="login-sub">Login untuk kawal akses staff, kos, untung dan cloud sync.</div>
+    <div id="login-form">
+      <div class="ff"><label>Email</label><input type="text" id="login-user" placeholder="Email" autocomplete="username"></div>
+      <div class="ff"><label>Password</label><input type="password" id="login-pin" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginUser()"></div>
+      <div class="alert-box alert-red" id="login-warning" style="display:none;margin-bottom:8px;">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span id="login-warning-text">Login warning</span>
+      </div>
+      <button class="sbtn" onclick="loginUser()">Login</button>
+      <button class="sbtn2" onclick="showSignupForm()">Signup / Request Account</button>
+    </div>
+    <div id="signup-form" style="display:none;">
+      <div class="ff"><label>Nama penuh</label><input type="text" id="su-name" placeholder="Nama staff"></div>
+      <div class="ff"><label>Email</label><input type="email" id="su-email" placeholder="nama@email.com" autocomplete="email"></div>
+      <div class="ff"><label>Password</label><input type="password" id="su-pass" placeholder="Min 4 aksara" autocomplete="new-password"></div>
+      <button class="sbtn" onclick="signupUser()">Request Create Profile</button>
+      <button class="sbtn2" onclick="showLoginForm()">Kembali Login</button>
+      <div class="ai-box" id="signup-pending-box" style="display:none;margin-top:9px;">
+        <div class="ai-t">Request Pending</div>
+        <div class="ai-c" id="signup-pending-msg">Your request has been pending. Tunggu admin approve account anda.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-wrap">
+  <div class="toast-w"><div class="toast" id="toast"></div></div>
+  <div class="scr">
+    <div class="scan-overlay" id="scan-overlay">
+      <div class="scan-head"><h2>Scan Barcode / QR</h2><button class="scan-close" onclick="stopScanner()">×</button></div>
+      <div class="scan-box">
+        <video id="scan-video" playsinline muted></video>
+        <div class="scan-frame"></div>
+      </div>
+      <div class="scan-status" id="scan-status">Arahkan kamera kepada barcode produk atau QR SKU. Pastikan barcode tajam, cukup cahaya, dan tidak terlalu dekat.</div>
+      <div class="scan-manual">
+        <div style="font-size:11px;font-weight:600;">Manual SKU / Barcode</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;" id="scan-code-preview">Kod scan: -</div>
+        <input type="text" id="scan-manual" placeholder="Contoh: CSE-001 atau p3">
+        <button class="sbtn" onclick="submitManualScan()">Cari / Tambah ke cart</button>
+        <button class="sbtn2" onclick="document.getElementById('scan-image').click()">Scan dari gambar</button>
+        <input class="import-file" type="file" id="scan-image" accept="image/*" onchange="scanImageFile(this)">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px;">
+          <button class="sbtn2" onclick="handleScanCode('p3')" style="margin:0;">Test item ada</button>
+          <button class="sbtn2" onclick="handleScanCode('NEW-SKU-001')" style="margin:0;">Test item baru</button>
+        </div>
+      </div>
+    </div>
+    <div class="pay-overlay" id="pay-overlay">
+      <div class="pay-panel">
+        <div class="pay-head"><h2>Confirm Payment</h2><button class="pay-close" onclick="closePaymentModal()">×</button></div>
+        <div class="pay-bank">
+          <div class="holder" id="pay-type">Bank Transfer / QR</div>
+          <div class="name" id="pay-bank-name">Maybank</div>
+          <div class="acc" id="pay-bank-acc">5620 1234 9876</div>
+          <div class="holder" id="pay-bank-holder">LUBUK IT / PhoneFix Pro</div>
+        </div>
+        <div style="text-align:center;font-size:10px;color:var(--color-text-secondary);margin-top:-3px;margin-bottom:4px;" id="pay-qr-label">DuitNow QR</div>
+        <div class="pay-qr" id="pay-qr"></div>
+        <div class="card">
+          <h3>Detail Belian</h3>
+          <div id="pay-items"></div>
+        </div>
+        <div class="pay-total"><span>Total perlu dibayar</span><span id="pay-total">RM 0</span></div>
+        <div class="ff"><label>Password account login untuk confirm</label><input type="password" id="pay-pass" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')confirmPayment()"></div>
+        <button class="sbtn" onclick="confirmPayment()">Done Payment / Confirm</button>
+        <button class="sbtn2" onclick="closePaymentModal()">Cancel</button>
+      </div>
+    </div>
+    <div class="status-overlay" id="status-overlay">
+      <div class="status-panel">
+        <div class="status-head"><h2>Update Status Ticket</h2><button class="pay-close" onclick="closeStatusModal()">×</button></div>
+        <div class="ff"><label>Pilih status baru</label><select id="status-select" onchange="toggleStatusReceipt()"><option value="new">Baru Masuk</option><option value="prog">Dalam Proses</option><option value="done">Siap - Pickup</option><option value="del">Diambil / Collect</option></select></div>
+        <div id="collect-receipt-box" style="display:none;">
+          <div class="evidence-box">
+            <div class="section-hdr">Resit Full Payment</div>
+            <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;">Wajib upload/snap resit full payment sebelum close job sebagai Diambil / Collect. Gambar akan auto dilabel dan download selepas confirm.</div>
+            <div class="evidence-actions">
+              <button class="sbtn2" onclick="captureFullReceipt()" style="margin:0;">Snap / Pilih Resit</button>
+              <button class="sbtn2" onclick="clearFullReceipt()" style="margin:0;">Clear</button>
+            </div>
+            <input class="import-file" type="file" id="full-receipt-file" accept="image/*" capture="environment" onchange="loadFullReceipt(this)">
+            <img id="full-receipt-preview" class="evidence-preview" alt="Preview resit full payment">
+          </div>
+          <div class="ff"><label>Password login untuk close job</label><input type="password" id="status-pass" placeholder="Masukkan password"></div>
+        </div>
+        <button class="sbtn" onclick="confirmStatusUpdate()">Confirm Update</button>
+        <button class="sbtn2" onclick="closeStatusModal()">Cancel</button>
+      </div>
+    </div>
+    <div class="pay-overlay" id="staff-settings-overlay">
+      <div class="pay-panel">
+        <div class="pay-head"><h2>Staff Setting</h2><button class="pay-close" onclick="closeStaffSettings()">×</button></div>
+        <div class="card">
+          <h3>Bahasa</h3>
+          <div class="lang-tog" style="margin:0;">
+            <button class="lb on" id="staff-lang-my" onclick="setLang('my')">Bahasa Malaysia</button>
+            <button class="lb" id="staff-lang-en" onclick="setLang('en')">English</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Theme</h3>
+          <div class="lang-tog" style="margin:0;">
+            <button class="lb" id="staff-theme-light" onclick="setThemeMode('light')">Light Mode</button>
+            <button class="lb" id="staff-theme-dark" onclick="setThemeMode('dark')">Dark Mode</button>
+          </div>
+        </div>
+        <button class="sbtn2" onclick="closeStaffSettings()">Tutup</button>
+      </div>
+    </div>
+    <div class="pay-overlay" id="report-settings-overlay">
+      <div class="pay-panel">
+        <div class="pay-head"><h2>Setting</h2><button class="pay-close" onclick="closeReportSettings()">×</button></div>
+        <div class="card">
+          <h3>Bahasa</h3>
+          <div class="lang-tog" style="margin:0;">
+            <button class="lb on" id="lang-my" onclick="setLang('my')">Bahasa Malaysia</button>
+            <button class="lb" id="lang-en" onclick="setLang('en')">English</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Theme</h3>
+          <div class="lang-tog" style="margin:0;">
+            <button class="lb" id="theme-light" onclick="setThemeMode('light')">Light Mode</button>
+            <button class="lb" id="theme-dark" onclick="setThemeMode('dark')">Dark Mode</button>
+          </div>
+        </div>
+        <div class="card admin-only">
+          <h3>Payment QR Setting</h3>
+          <div class="ff"><label>Jenis payment</label><input type="text" id="payset-type" placeholder="Bank Transfer / QR"></div>
+          <div class="ff"><label>Nama bank / wallet</label><input type="text" id="payset-bank" placeholder="Maybank"></div>
+          <div class="ff"><label>No. akaun / nombor penerima</label><input type="text" id="payset-account" placeholder="5620 1234 9876"></div>
+          <div class="ff"><label>Nama account</label><input type="text" id="payset-holder" placeholder="LUBUK IT / PhoneFix Pro"></div>
+          <div class="ff"><label>Label QR</label><input type="text" id="payset-qr" placeholder="DuitNow QR"></div>
+          <img id="payset-qr-preview" class="qr-preview" alt="Preview QR bank">
+          <button class="sbtn2" onclick="document.getElementById('payset-qr-file').click()">Upload / Tukar QR Bank</button>
+          <button class="sbtn2" onclick="clearPaymentQR()">Buang QR</button>
+          <input class="import-file" type="file" id="payset-qr-file" accept="image/*" onchange="loadPaymentQRImage(this)">
+          <button class="sbtn" onclick="savePaymentSettings()">Simpan Payment Setting</button>
+        </div>
+        <button class="sbtn2" onclick="closeReportSettings()">Tutup</button>
+      </div>
+    </div>
+    <div class="pay-overlay" id="account-request-overlay">
+      <div class="pay-panel">
+        <div class="pay-head"><h2>Approve New Profile</h2><button class="pay-close" onclick="closeAccountRequests()">×</button></div>
+        <div id="account-request-list"></div>
+        <button class="sbtn2" onclick="closeAccountRequests()">Tutup</button>
+      </div>
+    </div>
+
+    <!-- TICKET HOME -->
+    <div class="pg act" id="p-ticket">
+      <div class="tb">
+        <div class="brand-head"><img class="brand-wordmark header-logo" src="assets/brand/name-brand-black.png" alt="PhoneFix Pro"><div class="sub" id="nav-sub-ticket">Ahad, 8 Jun 2026</div></div>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <span class="role-badge" id="role-badge">Admin</span>
+          <button class="ib admin-only" onclick="goPg('p-rpt-tk')" aria-label="Laporan">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="ib" onclick="toastM('bell_msg')" aria-label="Notifikasi">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="mg2">
+          <div class="mt"><div class="ml" id="lbl-active">Aktif</div><div class="mv" style="color:#854F0B;" id="h-active">12</div><div class="ms" id="lbl-inprog">Dalam proses</div></div>
+          <div class="mt"><div class="ml" id="lbl-ready">Siap pickup</div><div class="mv" style="color:#3B6D11;">7</div><div class="ms" id="lbl-collect">Sedia diambil</div></div>
+          <div class="mt"><div class="ml" id="lbl-rev-today">Hasil hari ini</div><div class="mv">RM 840</div><div class="ms" id="lbl-vs-yest">+12% semalam</div></div>
+          <div class="mt"><div class="ml" id="lbl-monthly">Jumlah bulan</div><div class="mv">48</div><div class="ms" id="lbl-month-lbl">Jun 2026</div></div>
+        </div>
+        <div class="pill-row" id="tk-filter">
+          <div class="pill on" onclick="setTkF(this,'all')" id="fp-all">Semua</div>
+          <div class="pill" onclick="setTkF(this,'prog')" id="fp-prog">Proses</div>
+          <div class="pill" onclick="setTkF(this,'done')" id="fp-done">Siap</div>
+          <div class="pill" onclick="setTkF(this,'new')" id="fp-new">Baru</div>
+          <div class="pill" onclick="setTkF(this,'del')" id="fp-del">Selesai</div>
+        </div>
+        <div id="tk-list"></div>
+        <div style="height:55px;"></div>
+      </div>
+      <button class="fab" onclick="goPg('p-add-tk')" aria-label="Tambah ticket baru">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <!-- TICKET REPORT -->
+    <div class="pg" id="p-rpt-tk">
+      <div class="tb"><div class="bk" onclick="goPg('p-ticket')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back">Kembali</span></div><h1 id="lbl-rpt-tk-title">Laporan Ticket</h1></div>
+      <div class="sa">
+        <div class="pill-row" id="rpt-tk-period">
+          <div class="pill on" onclick="setPill(this,'rpt-tk-period')" id="fp-daily">Harian</div>
+          <div class="pill" onclick="setPill(this,'rpt-tk-period')" id="fp-monthly2">Bulanan</div>
+        </div>
+        <div class="rpt-big"><div class="rl" id="lbl-total-repair">Jumlah repair</div><div class="rv">48</div><div class="rs" id="lbl-jun">Jun 2026</div></div>
+        <div class="mg2">
+          <div class="mt"><div class="ml" id="lbl-hasil">Hasil</div><div class="mv">RM 12,480</div></div>
+          <div class="mt"><div class="ml" id="lbl-avg">Purata/ticket</div><div class="mv">RM 260</div></div>
+          <div class="mt"><div class="ml" id="lbl-new-cust">Pelanggan baru</div><div class="mv">31</div></div>
+          <div class="mt"><div class="ml" id="lbl-kadar">Kadar siap</div><div class="mv">94%</div></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-pop-repair">Repair Popular</h3>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-skrin">Skrin</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#7FB800;"></div></div><span class="bar-val">38</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-bateri">Bateri</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#1D9E75;"></div></div><span class="bar-val">26</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-charge">Charging</span><div class="bar-track"><div class="bar-fill" style="width:35%;background:#D85A30;"></div></div><span class="bar-val">17</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-speaker">Speaker</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:#D4537E;"></div></div><span class="bar-val">9</span></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-tech-perf">Prestasi Technician</h3>
+          <div class="dr"><span class="dl">Hafiz</span><span id="lbl-hafiz" class="dv">22 repair · RM 5,720</span></div>
+          <div class="dr"><span class="dl">Razif</span><span id="lbl-razif" class="dv">18 repair · RM 4,680</span></div>
+          <div class="dr"><span class="dl">Amirul</span><span id="lbl-amirul" class="dv">8 repair · RM 2,080</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TICKET DETAIL -->
+    <div class="pg" id="p-tk-detail">
+      <div class="tb">
+        <div class="bk" onclick="goPg('p-ticket')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back2">Kembali</span></div>
+        <div style="display:flex;gap:4px;">
+          <button class="ib" onclick="goPg('p-qr')" aria-label="QR Tracker"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="16" y="16" width="2" height="2"/><rect x="19" y="16" width="2" height="2"/><rect x="16" y="19" width="2" height="2"/><rect x="19" y="19" width="2" height="2"/></svg></button>
+          <button class="ib" onclick="toastM('receipt_sent')" aria-label="Resit"><svg viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg></button>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+            <div id="d-av" class="av" style="width:36px;height:36px;font-size:12px;"></div>
+            <div style="flex:1;"><div id="d-nm" style="font-size:13px;font-weight:500;color:var(--color-text-primary);"></div><div id="d-id" style="font-size:9px;color:var(--color-text-tertiary);font-family:var(--font-mono);margin-top:1px;"></div></div>
+            <div id="d-bdg" class="bdg"></div>
+          </div>
+          <div class="dr"><span class="dl" id="lbl-device">Peranti</span><span id="d-dev" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-problem">Masalah</span><span id="d-prb" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-tech">Technician</span><span id="d-tch" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-deposit">Deposit</span><span id="d-dep" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-total">Jumlah</span><span id="d-prc" class="dv" style="color:#7FB800;font-size:12px;"></span></div>
+        </div>
+        <div class="card"><h3 id="lbl-repair-status">Status Repair</h3><div id="d-tl"></div></div>
+        <div style="padding:0;margin-bottom:5px;">
+          <div class="section-hdr" id="lbl-actions">Tindakan</div>
+          <button class="ab" onclick="sendTicketWhatsApp()"><svg style="stroke:#1D9E75;" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span id="lbl-send-wa">Hantar WhatsApp</span></button>
+          <button class="ab" onclick="openStatusModal()"><svg style="stroke:#854F0B;" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span id="d-stlbl">Kemaskini Status</span></button>
+          <button class="ab" onclick="goPg('p-photo')"><svg style="stroke:#993556;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span id="lbl-photo">Foto Before &amp; After</span></button>
+          <button class="ab" onclick="downloadEvidenceImage(curTk)"><svg style="stroke:#185FA5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download Bukti</span></button>
+          <button class="ab" onclick="goPg('p-ai')"><svg style="stroke:#7FB800;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/></svg><span id="lbl-ai-est">AI Estimator</span></button>
+        </div>
+        <div style="height:10px;"></div>
+      </div>
+    </div>
+
+    <!-- ADD TICKET -->
+    <div class="pg" id="p-add-tk">
+      <div class="tb"><div class="bk" onclick="goPg('p-ticket')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back3">Kembali</span></div><h1 id="lbl-new-ticket">Ticket Baru</h1></div>
+      <div class="sa">
+        <div class="ff"><label id="lbl-cust-nm">Nama pelanggan</label><input type="text" id="f-nm" placeholder="Ahmad Hafizi"></div>
+        <div class="ff"><label id="lbl-cust-ph">No. telefon</label><input type="tel" id="f-ph" placeholder="01x-xxx xxxx"></div>
+        <div class="ff"><label id="lbl-f-device">Peranti</label><select id="f-dev"><option>iPhone</option><option>Samsung</option><option>Xiaomi</option><option>OPPO</option><option>Vivo</option><option>Huawei</option><option>Lain-lain</option></select></div>
+        <div class="ff"><label id="lbl-f-model">Model</label><input type="text" id="f-mod" placeholder="iPhone 14 Pro"></div>
+        <div class="ff"><label id="lbl-f-issue">Masalah</label><select id="f-prb"><option>Skrin pecah</option><option>Bateri drain</option><option>Tak boleh charge</option><option>Speaker rosak</option><option>Water damage</option><option>Kamera rosak</option><option>Lain-lain</option></select></div>
+        <div class="ff"><label id="lbl-f-note">Catatan</label><textarea id="f-nt" placeholder="Hurai masalah..."></textarea></div>
+        <div class="evidence-box">
+          <div class="section-hdr">Bukti Gambar</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;">Ambil gambar keadaan phone masa customer hantar. App akan auto letak label nama, model, masalah dan tarikh hantar di bawah gambar.</div>
+          <div class="evidence-actions">
+            <button class="sbtn2" onclick="captureTicketEvidence()" style="margin:0;">Snap / Pilih Gambar</button>
+            <button class="sbtn2" onclick="clearTicketEvidence()" style="margin:0;">Clear</button>
+          </div>
+          <input class="import-file" type="file" id="ticket-evidence-file" accept="image/*" capture="environment" onchange="loadTicketEvidence(this)">
+          <img id="ticket-evidence-preview" class="evidence-preview" alt="Preview bukti ticket">
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label id="lbl-f-price">Harga (RM)</label><input type="number" id="f-pr" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label id="lbl-f-dep">Deposit (RM)</label><input type="number" id="f-dp" placeholder="0"></div>
+        </div>
+        <div class="evidence-box">
+          <div class="section-hdr">Resit Deposit</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;">Jika ada deposit, snap atau masukkan gambar resit. App akan label nama, ticket, deposit dan tarikh, kemudian auto download ke device selepas simpan ticket.</div>
+          <div class="evidence-actions">
+            <button class="sbtn2" onclick="captureDepositReceipt()" style="margin:0;">Snap / Pilih Resit</button>
+            <button class="sbtn2" onclick="clearDepositReceipt()" style="margin:0;">Clear</button>
+          </div>
+          <input class="import-file" type="file" id="deposit-receipt-file" accept="image/*" capture="environment" onchange="loadDepositReceipt(this)">
+          <img id="deposit-receipt-preview" class="evidence-preview" alt="Preview resit deposit">
+        </div>
+        <div class="ff"><label>Warranty service (hari)</label><input type="number" id="f-war" placeholder="30"></div>
+        <div class="ff"><label id="lbl-f-tech">Technician</label><select id="f-tc"><option>Hafiz</option><option>Razif</option><option>Amirul</option></select></div>
+        <button class="sbtn" onclick="saveTk()" id="lbl-save-tk">Simpan Ticket</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- QR TRACKER -->
+    <div class="pg" id="p-qr">
+      <div class="tb"><div class="bk" onclick="goPg('p-tk-detail')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back4">Kembali</span></div><h1 id="lbl-qr-title">QR Tracker</h1></div>
+      <div class="sa">
+        <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t" id="lbl-wow">WOW Feature</div><div class="ai-c" id="lbl-qr-desc">Customer scan QR ini — terus nampak status repair live tanpa perlu call!</div></div>
+        <div style="background:var(--color-background-secondary);border-radius:11px;padding:14px;text-align:center;margin-bottom:7px;">
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:85px;margin:0 auto 7px;" id="qr-grid"></div>
+          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="qr-lbl">Ticket #TK-048</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);" id="lbl-qr-scan">Scan untuk semak status</div>
+        </div>
+        <div class="card">
+          <div class="dr"><span class="dl" id="lbl-qr-tk">Ticket</span><span id="qr-tk" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-qr-nm">Pelanggan</span><span id="qr-nm" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-qr-st">Status</span><span id="qr-st" class="dv"></span></div>
+        </div>
+        <button class="sbtn2" onclick="copyQR()" id="lbl-copy-qr">Salin link tracker</button>
+        <button class="sbtn" onclick="printQR()" style="margin-top:5px;" id="lbl-print-qr">Cetak QR</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- FOTO -->
+    <div class="pg" id="p-photo">
+      <div class="tb"><div class="bk" onclick="goPg('p-tk-detail')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back5">Kembali</span></div><h1 id="lbl-photo-title">Foto Before &amp; After</h1></div>
+      <div class="sa">
+        <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t" id="lbl-photo-wow">WOW Feature</div><div class="ai-c" id="lbl-photo-desc">Ambil gambar phone sebelum &amp; selepas repair. Elak dispute!</div></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:7px;">
+          <div style="background:var(--color-background-secondary);border-radius:11px;padding:13px;text-align:center;cursor:pointer;" onclick="capturePhoto('before')">
+            <svg style="width:26px;height:26px;stroke:#7FB800;fill:none;stroke-width:1.8;display:block;margin:0 auto 5px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-before">Before</div>
+            <div style="font-size:9px;color:var(--color-text-secondary);" id="lbl-tap-cam">Tap untuk ambil</div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:11px;padding:13px;text-align:center;cursor:pointer;" onclick="capturePhoto('after')">
+            <svg style="width:26px;height:26px;stroke:#1D9E75;fill:none;stroke-width:1.8;display:block;margin:0 auto 5px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-after">After</div>
+            <div style="font-size:9px;color:var(--color-text-secondary);" id="lbl-tap-cam2">Tap untuk ambil</div>
+          </div>
+        </div>
+        <div class="card"><h3 id="lbl-saved-photo">Foto tersimpan</h3>
+          <div style="display:flex;align-items:center;gap:7px;padding:5px 0;">
+            <div style="width:34px;height:34px;border-radius:6px;background:#ECFFD1;display:flex;align-items:center;justify-content:center;">
+              <svg style="width:16px;height:16px;stroke:#7FB800;fill:none;stroke-width:1.8;" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div><div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">before_TK048.jpg</div><div style="font-size:9px;color:var(--color-text-tertiary);">8 Jun · 9:31 pagi</div></div>
+            <span class="bdg b4" style="margin-left:auto;" id="lbl-before-bdg">Before</span>
+          </div>
+        </div>
+        <button class="sbtn2" onclick="sharePhotos()" id="lbl-share-photo">Kongsi dengan pelanggan</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- AI ESTIMATOR -->
+    <div class="pg" id="p-ai">
+      <div class="tb"><div class="bk" onclick="goPg('p-tk-detail')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back6">Kembali</span></div><h1 id="lbl-ai-title">AI Estimator</h1></div>
+      <div class="sa">
+        <div class="ai-box" style="margin-bottom:9px;"><div class="ai-t" id="lbl-ai-smart">Smart Feature — AI</div><div class="ai-c" id="lbl-ai-desc">Pilih jenis phone &amp; masalah — AI estimate harga &amp; masa repair!</div></div>
+        <div class="ff"><label id="lbl-ai-brand">Jenama phone</label><select id="ai-brand" onchange="aiEst()"><option value="">Pilih...</option><option>iPhone</option><option>Samsung</option><option>Xiaomi</option><option>OPPO</option><option>Vivo</option></select></div>
+        <div class="ff"><label id="lbl-ai-prob">Masalah</label><select id="ai-prob" onchange="aiEst()"><option value="">Pilih...</option><option>Skrin pecah</option><option>Bateri drain</option><option>Tak boleh charge</option><option>Speaker rosak</option><option>Water damage</option><option>Kamera rosak</option></select></div>
+        <div id="ai-result" style="display:none;">
+          <div class="ai-box">
+            <div class="ai-t" id="lbl-ai-est-lbl">Anggaran AI</div>
+            <div class="dr" style="border-color:#B6F000;"><span class="dl" style="color:#7FB800;" id="lbl-ai-price">Harga</span><span id="ai-price" class="dv" style="color:#7FB800;"></span></div>
+            <div class="dr" style="border-color:#B6F000;"><span class="dl" style="color:#7FB800;" id="lbl-ai-time">Masa</span><span id="ai-time" class="dv" style="color:#7FB800;"></span></div>
+            <div class="dr" style="border-color:#B6F000;border-bottom:none;"><span class="dl" style="color:#7FB800;" id="lbl-ai-part">Spare part</span><span id="ai-part" class="dv" style="color:#7FB800;"></span></div>
+          </div>
+          <div id="ai-note" class="ai-box" style="margin-top:-3px;display:none;"></div>
+          <button class="sbtn" onclick="goPg('p-add-tk')" id="lbl-ai-use">Guna estimate untuk ticket</button>
+        </div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- POS -->
+    <div class="pg" id="p-pos">
+      <div class="tb"><h1 id="lbl-pos-title">POS — Jualan</h1>
+        <div style="display:flex;gap:4px;">
+          <button class="ib" onclick="startScanner()"><svg viewBox="0 0 24 24"><polyline points="4 7 4 4 7 4"/><polyline points="17 4 20 4 20 7"/><polyline points="20 17 20 20 17 20"/><polyline points="7 20 4 20 4 17"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="12" y1="12" x2="17" y2="12"/><line x1="12" y1="7" x2="12" y2="12"/></svg></button>
+          <button class="ib admin-only" onclick="goPg('p-add-item')" aria-label="Tambah produk"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="pill-row" id="pos-cat">
+          <div class="pill on" onclick="setPCat(this,'all')" id="pc-all">Semua</div>
+          <div class="pill" onclick="setPCat(this,'service')" id="pc-svc">Servis</div>
+          <div class="pill" onclick="setPCat(this,'case')" id="pc-case">Case</div>
+          <div class="pill" onclick="setPCat(this,'screen')" id="pc-scr">Screen</div>
+          <div class="pill" onclick="setPCat(this,'cable')" id="pc-cab">Kabel</div>
+          <div class="pill" onclick="setPCat(this,'audio')" id="pc-aud">Audio</div>
+          <div class="pill" onclick="setPCat(this,'pkg')" id="pc-pkg">Pakej</div>
+        </div>
+        <div class="card admin-only" id="pos-stock-card"><h3>Stok Rendah</h3><div id="pos-stock-alerts"></div></div>
+        <div id="pos-list"></div>
+        <div class="card" style="margin-top:3px;">
+          <h3 id="lbl-cart">Keranjang</h3>
+          <div id="cart-items"><div style="font-size:10px;color:var(--color-text-tertiary);padding:5px 0;" id="lbl-empty-cart">Belum ada item</div></div>
+          <div style="border-top:.5px solid var(--color-border-tertiary);margin-top:6px;padding-top:6px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--color-text-secondary);" id="lbl-total-cart">Jumlah</span>
+            <span style="font-size:14px;font-weight:500;color:#7FB800;" id="cart-total">RM 0</span>
+          </div>
+          <button class="sbtn" style="margin-top:7px;" onclick="checkout()" id="lbl-pay-btn">Bayar &amp; Jana Resit</button>
+        </div>
+        <div style="height:55px;"></div>
+      </div>
+      <button class="fab admin-only" onclick="goPg('p-add-item')" aria-label="Tambah/Edit produk">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+    </div>
+
+    <!-- ADD ITEM -->
+    <div class="pg" id="p-add-item">
+      <div class="tb"><div class="bk" onclick="goPg('p-pos')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back7">Kembali</span></div><h1 id="lbl-add-item-title">Tambah / Edit</h1></div>
+      <div class="sa">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:9px;">
+          <div style="background:var(--color-background-secondary);border-radius:9px;padding:11px;text-align:center;cursor:pointer;border:.5px solid var(--color-border-secondary);" onclick="newProductForm()">
+            <svg style="width:20px;height:20px;stroke:#085041;fill:none;stroke-width:1.8;display:block;margin:0 auto 4px;" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-add-prod">Tambah Produk</div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:9px;padding:11px;text-align:center;cursor:pointer;border:.5px solid var(--color-border-secondary);" onclick="newServiceForm()">
+            <svg style="width:20px;height:20px;stroke:#1A1A18;fill:none;stroke-width:1.8;display:block;margin:0 auto 4px;" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-add-svc">Tambah Servis</div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:9px;padding:11px;text-align:center;cursor:pointer;border:.5px solid var(--color-border-secondary);" onclick="newPackageForm()">
+            <svg style="width:20px;height:20px;stroke:#633806;fill:none;stroke-width:1.8;display:block;margin:0 auto 4px;" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-add-pkg">Tambah Pakej</div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:9px;padding:11px;text-align:center;cursor:pointer;border:.5px solid var(--color-border-secondary);" onclick="toast('Tekan mana-mana item dalam senarai bawah untuk edit.')">
+            <svg style="width:20px;height:20px;stroke:#185FA5;fill:none;stroke-width:1.8;display:block;margin:0 auto 4px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);" id="lbl-edit-item">Edit Item</div>
+          </div>
+        </div>
+        <div class="card"><h3 id="lbl-all-items">Senarai Semua Item</h3><div id="all-items-list"></div></div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ADD PRODUCT -->
+    <div class="pg" id="p-add-product">
+      <div class="tb"><div class="bk" onclick="goPg('p-add-item')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back8">Kembali</span></div><h1 id="lbl-new-prod">Produk Baru</h1></div>
+      <div class="sa">
+        <div class="ff"><label id="lbl-prod-nm">Nama produk</label><input type="text" id="pr-nm" placeholder="Case iPhone 15 Pro"></div>
+        <div class="ff"><label id="lbl-prod-cat">Kategori</label><select id="pr-cat"><option value="case">Case &amp; Cover</option><option value="screen">Screen Protector</option><option value="cable">Kabel &amp; Charger</option><option value="audio">Audio</option><option value="other">Lain-lain</option></select></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label id="lbl-sell-pr">Harga jual (RM)</label><input type="number" id="pr-price" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label id="lbl-cost-pr">Harga kos (RM)</label><input type="number" id="pr-cost" placeholder="0"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label id="lbl-qty">Kuantiti stok</label><input type="number" id="pr-qty" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label id="lbl-min-stock">Stok minimum</label><input type="number" id="pr-min" placeholder="5"></div>
+        </div>
+        <div class="ff"><label id="lbl-brand">Jenama</label><input type="text" id="pr-brand" placeholder="Spigen, ESR, Anker"></div>
+        <div class="ff"><label>SKU</label><input type="text" id="pr-sku" placeholder="CSE-001"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label>Warranty (hari)</label><input type="number" id="pr-war" placeholder="7"></div>
+          <div class="ff" style="margin:0;"><label>Icon</label><select id="pr-icon"><option>📱</option><option>🛡️</option><option>🔌</option><option>🎧</option><option>🔋</option><option>🧰</option></select></div>
+        </div>
+        <button class="sbtn" onclick="saveProd()" id="lbl-save-prod">Simpan Produk</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ADD SERVICE -->
+    <div class="pg" id="p-add-service">
+      <div class="tb"><div class="bk" onclick="goPg('p-add-item')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back9">Kembali</span></div><h1 id="lbl-new-svc">Servis Baru</h1></div>
+      <div class="sa">
+        <div class="ff"><label id="lbl-svc-nm">Nama servis</label><input type="text" id="sv-nm" placeholder="Tukar Skrin iPhone 14"></div>
+        <div class="ff"><label id="lbl-svc-cat">Kategori</label><select id="sv-cat"><option value="service">Tukar Skrin</option><option value="service">Tukar Bateri</option><option value="service">Repair Charging Port</option><option value="service">Repair Speaker</option><option value="service">Water Damage</option><option value="service">Lain-lain</option></select></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label id="lbl-svc-pr">Harga (RM)</label><input type="number" id="sv-price" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label id="lbl-svc-time">Masa repair</label><select id="sv-time"><option>30 minit</option><option>1 jam</option><option>2 jam</option><option>Sama hari</option><option>1-2 hari</option></select></div>
+        </div>
+        <div class="ff"><label id="lbl-warranty">Waranti</label><select id="sv-war"><option>Tiada</option><option>7 hari</option><option>14 hari</option><option>30 hari</option></select></div>
+        <div class="ff"><label id="lbl-part">Spare part</label><input type="text" id="sv-part" placeholder="LCD iPhone 14 OEM"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label>Kos part (RM)</label><input type="number" id="sv-cost" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label>Icon</label><select id="sv-icon"><option>🧰</option><option>📱</option><option>🔋</option><option>🔌</option><option>🔊</option><option>📷</option></select></div>
+        </div>
+        <button class="sbtn" onclick="saveSvc()" id="lbl-save-svc">Simpan Servis</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ADD PACKAGE -->
+    <div class="pg" id="p-add-package">
+      <div class="tb"><div class="bk" onclick="goPg('p-add-item')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back10">Kembali</span></div><h1 id="lbl-new-pkg">Pakej Baru</h1></div>
+      <div class="sa">
+        <div class="ff"><label id="lbl-pkg-nm">Nama pakej</label><input type="text" id="pk-nm" placeholder="Pakej Skrin + Bateri iPhone"></div>
+        <div class="ff"><label id="lbl-pkg-tag">Tagline</label><input type="text" id="pk-tag" placeholder="Jimat RM50!"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label id="lbl-pkg-pr">Harga pakej (RM)</label><input type="number" id="pk-price" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label id="lbl-pkg-orig">Harga asal (RM)</label><input type="number" id="pk-orig" placeholder="0"></div>
+        </div>
+        <div class="ff">
+          <label id="lbl-pkg-inc">Yang termasuk</label>
+          <div id="feat-list">
+            <div class="feat-row"><input type="text" placeholder="Tukar skrin OEM"><button class="rm-btn" onclick="this.closest('.feat-row').remove()">✕</button></div>
+            <div class="feat-row"><input type="text" placeholder="Tukar bateri original"><button class="rm-btn" onclick="this.closest('.feat-row').remove()">✕</button></div>
+          </div>
+          <button style="width:100%;padding:6px;border-radius:7px;border:.5px dashed var(--color-border-secondary);background:transparent;font-size:10px;color:var(--color-text-secondary);cursor:pointer;margin-bottom:7px;" onclick="addFeat()" id="lbl-add-feat">+ Tambah item pakej</button>
+        </div>
+        <div class="ff"><label id="lbl-pkg-terms">Syarat</label><textarea id="pk-terms" placeholder="Harga subject to model..."></textarea></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px;">
+          <div class="ff" style="margin:0;"><label>Kos pakej (RM)</label><input type="number" id="pk-cost" placeholder="0"></div>
+          <div class="ff" style="margin:0;"><label>Warranty (hari)</label><input type="number" id="pk-war" placeholder="30"></div>
+        </div>
+        <div class="ff"><label>Icon</label><select id="pk-icon"><option>🎁</option><option>📱</option><option>🔋</option><option>🧰</option><option>✨</option></select></div>
+        <button class="sbtn" onclick="savePkg()" id="lbl-save-pkg">Simpan Pakej</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- STOCK -->
+    <div class="pg" id="p-stock">
+      <div class="tb"><h1 id="lbl-stock-title">Stok Inventori</h1>
+        <button class="ib admin-only" onclick="goPg('p-add-product')" aria-label="Tambah stok"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      </div>
+      <div class="sa">
+        <div id="stock-alerts"></div>
+        <div class="pill-row" id="stk-filter">
+          <div class="pill on" onclick="setStkF(this,'all')" id="sf-all">Semua</div>
+          <div class="pill" onclick="setStkF(this,'low')" id="sf-low">Stok Rendah</div>
+          <div class="pill" onclick="setStkF(this,'ok')" id="sf-ok">OK</div>
+          <div class="pill" onclick="setStkF(this,'part')" id="sf-part">Spare Part</div>
+          <div class="pill" onclick="setStkF(this,'acc')" id="sf-acc">Aksesori</div>
+        </div>
+        <div id="stk-list"></div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER -->
+    <div class="pg" id="p-cust">
+      <div class="tb"><h1 id="lbl-cust-title">Pelanggan</h1>
+        <button class="ib" onclick="goPg('p-add-tk')" aria-label="Tambah pelanggan"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button>
+      </div>
+      <div class="sa">
+        <div class="ff" style="margin-bottom:8px;"><input type="text" id="cust-srch" placeholder="Cari nama atau no. telefon..." oninput="renderCusts()"></div>
+        <div id="cust-list"></div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER DETAIL -->
+    <div class="pg" id="p-cust-detail">
+      <div class="tb"><div class="bk" onclick="goPg('p-cust')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span id="lbl-back11">Kembali</span></div><h1 id="lbl-cust-det-title">Detail Pelanggan</h1></div>
+      <div class="sa">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;">
+            <div id="cd-av" class="av" style="width:40px;height:40px;font-size:13px;background:#ECFFD1;color:#1A1A18;"></div>
+            <div><div id="cd-nm" style="font-size:13px;font-weight:500;color:var(--color-text-primary);"></div><div id="cd-ph" style="font-size:11px;color:var(--color-text-secondary);margin-top:1px;"></div></div>
+          </div>
+          <div class="dr"><span class="dl" id="lbl-cd-visit">Jumlah kunjungan</span><span id="cd-v" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-cd-spend">Jumlah belanja</span><span id="cd-spend" class="dv" style="color:#7FB800;"></span></div>
+          <div class="dr"><span class="dl" id="lbl-cd-last">Peranti terakhir</span><span id="cd-last" class="dv"></span></div>
+          <div class="dr"><span class="dl" id="lbl-cd-since">Pelanggan sejak</span><span id="cd-since" class="dv"></span></div>
+        </div>
+        <div class="card"><h3 id="lbl-cd-hist">Histori Repair</h3><div id="cd-hist"></div></div>
+        <div class="card"><h3>Warranty Monitor</h3><div id="cd-war"></div></div>
+        <button class="sbtn" onclick="toastM('wa_followup')" id="lbl-wa-followup" style="margin-bottom:5px;">WhatsApp Follow Up</button>
+        <button class="sbtn2" onclick="goPg('p-add-tk')" id="lbl-new-tk-cust">Buka Ticket Baru</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- LEARN -->
+    <div class="pg" id="p-learn">
+      <div class="tb"><h1>Learn Repair</h1>
+        <button class="ib" onclick="openIFixit()" aria-label="iFixit"><svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M4 7h16"/><path d="M6 17h12"/><path d="M8 12h8"/></svg></button>
+      </div>
+      <div class="sa">
+        <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t">Repair SOP</div><div class="ai-c">Panduan ringkas untuk technician. Untuk manual penuh ikut model, buka rujukan iFixit sebelum mula kerja.</div></div>
+        <div class="pill-row" id="learn-filter">
+          <div class="pill on" onclick="setLearnF(this,'all')">Semua</div>
+          <div class="pill" onclick="setLearnF(this,'screen')">Screen</div>
+          <div class="pill" onclick="setLearnF(this,'battery')">Battery</div>
+          <div class="pill" onclick="setLearnF(this,'charge')">Charging</div>
+          <div class="pill" onclick="setLearnF(this,'camera')">Camera</div>
+          <div class="pill" onclick="setLearnF(this,'water')">Water</div>
+        </div>
+        <div id="learn-list"></div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- LAPORAN -->
+    <div class="pg" id="p-laporan">
+      <div class="tb"><h1 id="lbl-rpt-main">Laporan Penuh</h1>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <button class="ib admin-only" onclick="openReportSettings()" aria-label="Setting"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1.05V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1.05-.33H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1.05V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.31.36.58.6 1 .24.42.67.33 1.05.33H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"/></svg></button>
+          <button class="ib admin-only" onclick="openAccountRequests()" aria-label="Approve account"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></button>
+          <button class="ib" onclick="exportReport()" aria-label="Export PDF"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+          <button class="ib" onclick="logoutUser()" aria-label="Logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="card admin-only">
+          <h3>Staff Reports</h3>
+          <div id="admin-report-list"></div>
+        </div>
+        <div class="card admin-only">
+          <h3>Cloud Sync Multi Device</h3>
+          <div class="dr"><span class="dl"><span class="sync-dot" id="sync-dot"></span>Status sync</span><span class="dv" id="sync-status">Offline local</span></div>
+          <div class="ff"><label>Firebase apiKey</label><input type="text" id="fb-apiKey" placeholder="AIza..."></div>
+          <div class="ff"><label>Firebase authDomain</label><input type="text" id="fb-authDomain" placeholder="project-id.firebaseapp.com"></div>
+          <div class="ff"><label>Firebase projectId</label><input type="text" id="fb-projectId" placeholder="project-id"></div>
+          <div class="ff"><label>Firebase appId</label><input type="text" id="fb-appId" placeholder="1:xxxx:web:xxxx"></div>
+          <div class="ff"><label>Database ID / Kedai</label><input type="text" id="fb-docId" placeholder="lubuk-it-main"></div>
+          <button class="sbtn" onclick="saveCloudConfig()">Save & Connect Sync</button>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px;">
+            <button class="sbtn2" onclick="pushCloudNow()" style="margin:0;">Upload Data Ini</button>
+            <button class="sbtn2" onclick="pullCloudNow()" style="margin:0;">Download Cloud</button>
+          </div>
+        </div>
+        <div class="card admin-only">
+          <h3>Database Bulanan</h3>
+          <div class="dr"><span class="dl">Export bulan ini</span><span class="dv" id="db-size">Auto backup</span></div>
+          <button class="sbtn" onclick="exportDB()">Export Database JSON</button>
+          <button class="sbtn2" onclick="document.getElementById('db-import').click()">Import Database Lama</button>
+          <input class="import-file" type="file" id="db-import" accept="application/json,.json" onchange="importDB(this)">
+        </div>
+        <div class="pill-row" id="rpt-main-period">
+          <div class="pill on" onclick="setPill(this,'rpt-main-period')" id="rm-daily">Harian</div>
+          <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-weekly">Mingguan</div>
+          <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-monthly">Bulanan</div>
+          <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-yearly">Tahunan</div>
+        </div>
+        <div class="rpt-big"><div class="rl" id="lbl-rpt2-rev">Hasil bulan ini</div><div class="rv">RM 12,480</div><div class="rs" id="lbl-rpt2-vs">+18% berbanding bulan lalu</div></div>
+        <div class="mg2">
+          <div class="mt"><div class="ml" id="lbl-rpt2-repair">Repair selesai</div><div class="mv">48</div></div>
+          <div class="mt"><div class="ml" id="lbl-rpt2-cust">Pelanggan baru</div><div class="mv">31</div></div>
+          <div class="mt"><div class="ml" id="lbl-rpt2-avg">Purata ticket</div><div class="mv">RM 260</div></div>
+          <div class="mt"><div class="ml" id="lbl-rpt2-rating">Rating kedai</div><div class="mv">4.8 ★</div></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-rpt2-pop">Repair Popular</h3>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-r2-skrin">Skrin</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#7FB800;"></div></div><span class="bar-val">38</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-r2-batt">Bateri</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#1D9E75;"></div></div><span class="bar-val">26</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-r2-chg">Charging</span><div class="bar-track"><div class="bar-fill" style="width:35%;background:#D85A30;"></div></div><span class="bar-val">17</span></div>
+          <div class="bar-row"><span class="bar-lbl" id="lbl-r2-spk">Speaker</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:#D4537E;"></div></div><span class="bar-val">9</span></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-rpt2-tech">Prestasi Technician</h3>
+          <div class="dr"><span class="dl">Hafiz</span><span id="lbl-r2-hafiz" class="dv">22 repair · RM 5,720</span></div>
+          <div class="dr"><span class="dl">Razif</span><span id="lbl-r2-razif" class="dv">18 repair · RM 4,680</span></div>
+          <div class="dr"><span class="dl">Amirul</span><span id="lbl-r2-amirul" class="dv">8 repair · RM 2,080</span></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-rpt2-profit">Analisis Untung</h3>
+          <div class="dr"><span class="dl" id="lbl-gross">Jualan kasar</span><span class="dv">RM 12,480</span></div>
+          <div class="dr"><span class="dl" id="lbl-parts-cost">Kos part</span><span class="dv">RM 5,200</span></div>
+          <div class="dr"><span class="dl" id="lbl-net-profit">Untung bersih</span><span class="dv" style="color:#3B6D11;">RM 7,280</span></div>
+          <div class="dr"><span class="dl" id="lbl-margin-pct">% margin</span><span class="dv" style="color:#3B6D11;">58%</span></div>
+        </div>
+        <div class="card">
+          <h3 id="lbl-review-hdr">Collect Review</h3>
+          <div id="review-list"></div>
+          <div style="margin-top:7px;">
+            <div style="font-size:10px;color:var(--color-text-secondary);margin-bottom:5px;" id="lbl-rate-us">Bagi rating:</div>
+            <div style="display:flex;gap:3px;margin-bottom:6px;" id="star-row">
+              <span class="star" onclick="setStar(1)">★</span><span class="star" onclick="setStar(2)">★</span><span class="star" onclick="setStar(3)">★</span><span class="star" onclick="setStar(4)">★</span><span class="star" onclick="setStar(5)">★</span>
+            </div>
+            <textarea id="rev-txt" placeholder="Tulis review..." style="width:100%;padding:7px 9px;border-radius:7px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:11px;color:var(--color-text-primary);font-family:var(--font-sans);min-height:45px;resize:none;margin-bottom:5px;"></textarea>
+            <button class="sbtn" onclick="submitReview()" id="lbl-submit-review">Hantar Review</button>
+          </div>
+        </div>
+        <button class="sbtn" onclick="exportReport()" id="lbl-export-btn" style="margin-top:3px;">Export PDF Laporan</button>
+        <button class="sbtn2" onclick="sendReviewLinks()" id="lbl-review-all-btn">Auto Hantar Review ke Semua Pelanggan</button>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- STAFF REPORT -->
+    <div class="pg" id="p-staff-report">
+      <div class="tb"><h1>Report</h1>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <button class="ib" onclick="openStaffSettings()" aria-label="Staff setting"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1.05V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1.05-.33H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1.05V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 18.9 6.1l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.31.36.58.6 1 .24.42.67.33 1.05.33H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"/></svg></button>
+          <button class="ib" onclick="logoutUser()" aria-label="Logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t">Staff Report</div><div class="ai-c">Hantar report kepada admin jika tersilap nama client, salah order, perlu tanya sesuatu, atau ada isu kerja.</div></div>
+        <div class="card">
+          <h3>Report Baru</h3>
+          <div class="ff"><label>Jenis report</label><select id="sr-type"><option>Silap nama client</option><option>Silap order / item</option><option>Masalah ticket</option><option>Masalah payment</option><option>Stok / barcode</option><option>Pertanyaan</option><option>Lain-lain</option></select></div>
+          <div class="ff"><label>Rujukan ticket / order</label><input type="text" id="sr-ref" placeholder="Contoh: TK-049 atau order POS"></div>
+          <div class="ff"><label>Detail report</label><textarea id="sr-msg" placeholder="Tulis apa yang berlaku atau soalan untuk admin..."></textarea></div>
+          <button class="sbtn" onclick="submitStaffReport()">Hantar Report</button>
+        </div>
+        <div class="card">
+          <h3>Senarai Report & Feedback</h3>
+          <div id="staff-report-list"></div>
+        </div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bnav-wrap">
+    <div class="bnav" role="navigation" aria-label="Navigasi utama">
+      <div class="nt on" id="tab-ticket" onclick="goTab('ticket')">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span id="nav-ticket">Tiket</span>
+      </div>
+      <div class="nt" id="tab-pos" onclick="goTab('pos')">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span id="nav-pos">POS</span>
+      </div>
+      <div class="nt" id="tab-cust" onclick="goTab('cust')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span id="nav-cust">Customer</span>
+      </div>
+      <div class="nt" id="tab-learn" onclick="goTab('learn')">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+        <span>Learn</span>
+      </div>
+      <div class="nt" id="tab-laporan" onclick="goTab('laporan')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span id="nav-laporan">Laporan</span>
+      </div>
+    </div>
+    <div class="trademark">© <span>PhoneFix Pro</span> 2026 by LUBUK IT</div>
+  </div>
+</div>
+
+<script>
+var lang='my';
+var MSG={
+  my:{bell_msg:'Stok rendah: Screen Protector & Bateri S23!',receipt_sent:'Resit dihantar ke WhatsApp!',wa_sent:'WhatsApp dihantar: Repair siap! Sila ambil.',qr_copied:'Link QR disalin!',qr_print:'QR dicetak!',cam_before:'Kamera dibuka — foto BEFORE',cam_after:'Kamera dibuka — foto AFTER',share_photo:'Gambar dihantar ke pelanggan!',scan:'Scanner barcode dibuka!',add_stock:'Tambah stok baru!',add_cust:'Tambah pelanggan baru!',wa_followup:'WhatsApp follow up dihantar!',export_pdf:'Laporan PDF sedang digenerate!',review_all:'Link review Google dihantar ke semua pelanggan!',edit_item:'Pilih item dari senarai untuk edit.',save_tk:'Ticket baru disimpan!',save_prod:'Produk disimpan!',save_svc:'Servis disimpan!',save_pkg:'Pakej disimpan!',checkout:'Bayaran berjaya! Resit dihantar.',empty_cart:'Pilih item dulu!',fill_name:'Sila isi nama!',status_up:'Status dikemaskini: ',lang_changed:'Ditukar ke Bahasa Malaysia!',review_ok:'Review dihantar! Terima kasih.'},
+  en:{bell_msg:'Low stock: Screen Protector & S23 Battery!',receipt_sent:'Receipt sent via WhatsApp!',wa_sent:'WhatsApp sent: Repair ready! Please collect.',qr_copied:'QR link copied!',qr_print:'QR printed!',cam_before:'Camera opened — BEFORE photo',cam_after:'Camera opened — AFTER photo',share_photo:'Photo sent to customer!',scan:'Barcode scanner opened!',add_stock:'Add new stock!',add_cust:'Add new customer!',wa_followup:'WhatsApp follow up sent!',export_pdf:'Generating PDF report!',review_all:'Google review link sent to all customers!',edit_item:'Select an item to edit.',save_tk:'New ticket saved!',save_prod:'Product saved!',save_svc:'Service saved!',save_pkg:'Package saved!',checkout:'Payment successful! Receipt sent.',empty_cart:'Please select an item first!',fill_name:'Please fill in the name!',status_up:'Status updated: ',lang_changed:'Switched to English!',review_ok:'Review submitted! Thank you.'}
+};
+function toastM(k){var m=MSG[lang]||MSG.my;toast(m[k]||k);}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2400);}
+
+var UI={
+  my:{'nav-ticket':'Tiket','nav-pos':'POS','nav-stock':'Stok','nav-cust':'Customer','nav-laporan':'Laporan','lbl-active':'Aktif','lbl-inprog':'Dalam proses','lbl-ready':'Siap pickup','lbl-collect':'Sedia diambil','lbl-rev-today':'Hasil hari ini','lbl-vs-yest':'+12% semalam','lbl-monthly':'Jumlah bulan','lbl-month-lbl':'Jun 2026','fp-all':'Semua','fp-prog':'Proses','fp-done':'Siap','fp-new':'Baru','fp-del':'Selesai','fp-daily':'Harian','fp-monthly2':'Bulanan','lbl-rpt-tk-title':'Laporan Ticket','lbl-total-repair':'Jumlah repair','lbl-jun':'Jun 2026','lbl-hasil':'Hasil','lbl-avg':'Purata/ticket','lbl-new-cust':'Pelanggan baru','lbl-kadar':'Kadar siap','lbl-pop-repair':'Repair Popular','lbl-skrin':'Skrin','lbl-bateri':'Bateri','lbl-charge':'Charging','lbl-speaker':'Speaker','lbl-tech-perf':'Prestasi Technician','lbl-hafiz':'22 repair · RM 5,720','lbl-razif':'18 repair · RM 4,680','lbl-amirul':'8 repair · RM 2,080','lbl-device':'Peranti','lbl-problem':'Masalah','lbl-tech':'Technician','lbl-deposit':'Deposit','lbl-total':'Jumlah','lbl-repair-status':'Status Repair','lbl-actions':'Tindakan','lbl-send-wa':'Hantar WhatsApp','lbl-photo':'Foto Before & After','lbl-ai-est':'AI Estimator','lbl-new-ticket':'Ticket Baru','lbl-cust-nm':'Nama pelanggan','lbl-cust-ph':'No. telefon','lbl-f-device':'Peranti','lbl-f-model':'Model','lbl-f-issue':'Masalah','lbl-f-note':'Catatan','lbl-f-price':'Harga (RM)','lbl-f-dep':'Deposit (RM)','lbl-f-tech':'Technician','lbl-save-tk':'Simpan Ticket','lbl-wow':'WOW Feature','lbl-qr-desc':'Customer scan QR ini — status repair live tanpa perlu call!','lbl-qr-scan':'Scan untuk semak status','lbl-qr-tk':'Ticket','lbl-qr-nm':'Pelanggan','lbl-qr-st':'Status','lbl-copy-qr':'Salin link tracker','lbl-print-qr':'Cetak QR','lbl-photo-wow':'WOW Feature','lbl-photo-desc':'Ambil gambar phone sebelum & selepas repair. Elak dispute!','lbl-before':'Before','lbl-after':'After','lbl-tap-cam':'Tap untuk ambil','lbl-tap-cam2':'Tap untuk ambil','lbl-saved-photo':'Foto tersimpan','lbl-before-bdg':'Before','lbl-share-photo':'Kongsi dengan pelanggan','lbl-ai-smart':'Smart Feature — AI','lbl-ai-desc':'Pilih jenis phone & masalah — AI estimate harga & masa!','lbl-ai-brand':'Jenama phone','lbl-ai-prob':'Masalah','lbl-ai-est-lbl':'Anggaran AI','lbl-ai-price':'Harga','lbl-ai-time':'Masa','lbl-ai-part':'Spare part','lbl-ai-use':'Guna estimate untuk ticket','lbl-pos-title':'POS — Jualan','pc-all':'Semua','pc-svc':'Servis','pc-case':'Case','pc-scr':'Screen','pc-cab':'Kabel','pc-aud':'Audio','pc-pkg':'Pakej','lbl-cart':'Keranjang','lbl-empty-cart':'Belum ada item','lbl-total-cart':'Jumlah','lbl-pay-btn':'Bayar & Jana Resit','lbl-add-item-title':'Tambah / Edit','lbl-add-prod':'Tambah Produk','lbl-add-svc':'Tambah Servis','lbl-add-pkg':'Tambah Pakej','lbl-edit-item':'Edit Item','lbl-all-items':'Senarai Semua Item','lbl-new-prod':'Produk Baru','lbl-prod-nm':'Nama produk','lbl-prod-cat':'Kategori','lbl-sell-pr':'Harga jual (RM)','lbl-cost-pr':'Harga kos (RM)','lbl-qty':'Kuantiti stok','lbl-min-stock':'Stok minimum','lbl-brand':'Jenama','lbl-save-prod':'Simpan Produk','lbl-new-svc':'Servis Baru','lbl-svc-nm':'Nama servis','lbl-svc-cat':'Kategori','lbl-svc-pr':'Harga (RM)','lbl-svc-time':'Masa repair','lbl-warranty':'Waranti','lbl-part':'Spare part','lbl-save-svc':'Simpan Servis','lbl-new-pkg':'Pakej Baru','lbl-pkg-nm':'Nama pakej','lbl-pkg-tag':'Tagline','lbl-pkg-pr':'Harga pakej (RM)','lbl-pkg-orig':'Harga asal (RM)','lbl-pkg-inc':'Yang termasuk','lbl-add-feat':'+ Tambah item pakej','lbl-pkg-terms':'Syarat','lbl-save-pkg':'Simpan Pakej','lbl-stock-title':'Stok Inventori','sf-all':'Semua','sf-low':'Stok Rendah','sf-ok':'OK','sf-part':'Spare Part','sf-acc':'Aksesori','lbl-cust-title':'Pelanggan','lbl-cust-det-title':'Detail Pelanggan','lbl-cd-visit':'Jumlah kunjungan','lbl-cd-spend':'Jumlah belanja','lbl-cd-last':'Peranti terakhir','lbl-cd-since':'Pelanggan sejak','lbl-cd-hist':'Histori Repair','lbl-wa-followup':'WhatsApp Follow Up','lbl-new-tk-cust':'Buka Ticket Baru','lbl-rpt-main':'Laporan Penuh','lbl-rpt2-rev':'Hasil bulan ini','lbl-rpt2-vs':'+18% berbanding bulan lalu','lbl-rpt2-repair':'Repair selesai','lbl-rpt2-cust':'Pelanggan baru','lbl-rpt2-avg':'Purata ticket','lbl-rpt2-rating':'Rating kedai','lbl-rpt2-pop':'Repair Popular','lbl-r2-skrin':'Skrin','lbl-r2-batt':'Bateri','lbl-r2-chg':'Charging','lbl-r2-spk':'Speaker','lbl-rpt2-tech':'Prestasi Technician','lbl-r2-hafiz':'22 repair · RM 5,720','lbl-r2-razif':'18 repair · RM 4,680','lbl-r2-amirul':'8 repair · RM 2,080','lbl-rpt2-profit':'Analisis Untung','lbl-gross':'Jualan kasar','lbl-parts-cost':'Kos part','lbl-net-profit':'Untung bersih','lbl-margin-pct':'% margin','lbl-review-hdr':'Collect Review','lbl-rate-us':'Bagi rating:','lbl-submit-review':'Hantar Review','lbl-export-btn':'Export PDF Laporan','lbl-review-all-btn':'Auto Hantar Review ke Semua Pelanggan','lbl-ai-title':'AI Estimator','nav-h-ticket':'Repair Tickets','nav-sub-ticket':'Ahad, 8 Jun 2026','lbl-photo-title':'Foto Before & After','lbl-qr-title':'QR Tracker','rm-daily':'Harian','rm-weekly':'Mingguan','rm-monthly':'Bulanan','rm-yearly':'Tahunan','lbl-back':'Kembali','lbl-back2':'Kembali','lbl-back3':'Kembali','lbl-back4':'Kembali','lbl-back5':'Kembali','lbl-back6':'Kembali','lbl-back7':'Kembali','lbl-back8':'Kembali','lbl-back9':'Kembali','lbl-back10':'Kembali','lbl-back11':'Kembali'},
+  en:{'nav-ticket':'Tickets','nav-pos':'POS','nav-stock':'Stock','nav-cust':'Customers','nav-laporan':'Report','lbl-active':'Active','lbl-inprog':'In progress','lbl-ready':'Ready pickup','lbl-collect':'Ready to collect','lbl-rev-today':"Today's revenue",'lbl-vs-yest':'+12% yesterday','lbl-monthly':'Monthly total','lbl-month-lbl':'Jun 2026','fp-all':'All','fp-prog':'In Progress','fp-done':'Done','fp-new':'New','fp-del':'Completed','fp-daily':'Daily','fp-monthly2':'Monthly','lbl-rpt-tk-title':'Ticket Report','lbl-total-repair':'Total repairs','lbl-jun':'Jun 2026','lbl-hasil':'Revenue','lbl-avg':'Avg/ticket','lbl-new-cust':'New customers','lbl-kadar':'Completion rate','lbl-pop-repair':'Popular Repairs','lbl-skrin':'Screen','lbl-bateri':'Battery','lbl-charge':'Charging','lbl-speaker':'Speaker','lbl-tech-perf':'Technician Performance','lbl-hafiz':'22 repairs · RM 5,720','lbl-razif':'18 repairs · RM 4,680','lbl-amirul':'8 repairs · RM 2,080','lbl-device':'Device','lbl-problem':'Problem','lbl-tech':'Technician','lbl-deposit':'Deposit','lbl-total':'Total','lbl-repair-status':'Repair Status','lbl-actions':'Actions','lbl-send-wa':'Send WhatsApp','lbl-photo':'Before & After Photos','lbl-ai-est':'AI Estimator','lbl-new-ticket':'New Ticket','lbl-cust-nm':'Customer name','lbl-cust-ph':'Phone number','lbl-f-device':'Device','lbl-f-model':'Model','lbl-f-issue':'Problem','lbl-f-note':'Notes','lbl-f-price':'Price (RM)','lbl-f-dep':'Deposit (RM)','lbl-f-tech':'Technician','lbl-save-tk':'Save Ticket','lbl-wow':'WOW Feature','lbl-qr-desc':'Customer scans QR — live repair status without calling!','lbl-qr-scan':'Scan to check status','lbl-qr-tk':'Ticket','lbl-qr-nm':'Customer','lbl-qr-st':'Status','lbl-copy-qr':'Copy tracker link','lbl-print-qr':'Print QR','lbl-photo-wow':'WOW Feature','lbl-photo-desc':'Take before & after photos. Avoid disputes!','lbl-before':'Before','lbl-after':'After','lbl-tap-cam':'Tap to capture','lbl-tap-cam2':'Tap to capture','lbl-saved-photo':'Saved photos','lbl-before-bdg':'Before','lbl-share-photo':'Share with customer','lbl-ai-smart':'Smart Feature — AI','lbl-ai-desc':'Select phone & problem — AI estimates price & repair time!','lbl-ai-brand':'Phone brand','lbl-ai-prob':'Problem','lbl-ai-est-lbl':'AI Estimate','lbl-ai-price':'Price','lbl-ai-time':'Time','lbl-ai-part':'Spare part','lbl-ai-use':'Use estimate for ticket','lbl-pos-title':'POS — Sales','pc-all':'All','pc-svc':'Services','pc-case':'Case','pc-scr':'Screen','pc-cab':'Cable','pc-aud':'Audio','pc-pkg':'Bundle','lbl-cart':'Cart','lbl-empty-cart':'No items yet','lbl-total-cart':'Total','lbl-pay-btn':'Pay & Generate Receipt','lbl-add-item-title':'Add / Edit','lbl-add-prod':'Add Product','lbl-add-svc':'Add Service','lbl-add-pkg':'Add Package','lbl-edit-item':'Edit Item','lbl-all-items':'All Items List','lbl-new-prod':'New Product','lbl-prod-nm':'Product name','lbl-prod-cat':'Category','lbl-sell-pr':'Selling price (RM)','lbl-cost-pr':'Cost price (RM)','lbl-qty':'Stock quantity','lbl-min-stock':'Minimum stock','lbl-brand':'Brand','lbl-save-prod':'Save Product','lbl-new-svc':'New Service','lbl-svc-nm':'Service name','lbl-svc-cat':'Category','lbl-svc-pr':'Price (RM)','lbl-svc-time':'Repair time','lbl-warranty':'Warranty','lbl-part':'Spare part','lbl-save-svc':'Save Service','lbl-new-pkg':'New Package','lbl-pkg-nm':'Package name','lbl-pkg-tag':'Tagline','lbl-pkg-pr':'Package price (RM)','lbl-pkg-orig':'Original price (RM)','lbl-pkg-inc':'What is included','lbl-add-feat':'+ Add item','lbl-pkg-terms':'Terms','lbl-save-pkg':'Save Package','lbl-stock-title':'Stock Inventory','sf-all':'All','sf-low':'Low Stock','sf-ok':'OK','sf-part':'Spare Parts','sf-acc':'Accessories','lbl-cust-title':'Customers','lbl-cust-det-title':'Customer Detail','lbl-cd-visit':'Total visits','lbl-cd-spend':'Total spending','lbl-cd-last':'Last device','lbl-cd-since':'Customer since','lbl-cd-hist':'Repair History','lbl-wa-followup':'WhatsApp Follow Up','lbl-new-tk-cust':'Open New Ticket','lbl-rpt-main':'Full Report','lbl-rpt2-rev':'This month revenue','lbl-rpt2-vs':'+18% vs last month','lbl-rpt2-repair':'Repairs done','lbl-rpt2-cust':'New customers','lbl-rpt2-avg':'Avg ticket','lbl-rpt2-rating':'Shop rating','lbl-rpt2-pop':'Popular Repairs','lbl-r2-skrin':'Screen','lbl-r2-batt':'Battery','lbl-r2-chg':'Charging','lbl-r2-spk':'Speaker','lbl-rpt2-tech':'Technician Performance','lbl-r2-hafiz':'22 repairs · RM 5,720','lbl-r2-razif':'18 repairs · RM 4,680','lbl-r2-amirul':'8 repairs · RM 2,080','lbl-rpt2-profit':'Profit Analysis','lbl-gross':'Gross sales','lbl-parts-cost':'Parts cost','lbl-net-profit':'Net profit','lbl-margin-pct':'Margin %','lbl-review-hdr':'Collect Review','lbl-rate-us':'Give a rating:','lbl-submit-review':'Submit Review','lbl-export-btn':'Export PDF Report','lbl-review-all-btn':'Auto Send Review to All Customers','lbl-ai-title':'AI Estimator','nav-h-ticket':'Repair Tickets','nav-sub-ticket':'Sunday, 8 Jun 2026','lbl-photo-title':'Before & After Photos','lbl-qr-title':'QR Tracker','rm-daily':'Daily','rm-weekly':'Weekly','rm-monthly':'Monthly','rm-yearly':'Yearly','lbl-back':'Back','lbl-back2':'Back','lbl-back3':'Back','lbl-back4':'Back','lbl-back5':'Back','lbl-back6':'Back','lbl-back7':'Back','lbl-back8':'Back','lbl-back9':'Back','lbl-back10':'Back','lbl-back11':'Back'}
+};
+
+function setLang(l){
+  lang=l;
+  var map=UI[l]||UI.my;
+  Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=map[id];});
+  syncLangButtons();
+  renderTkList();renderPOS();renderStock();renderCusts();renderAllItems();renderReviews();renderPhotos();updateMetrics();saveState();
+  toast((MSG[l]||MSG.my).lang_changed);
+}
+
+var tickets=[];
+var nextId=1;var curTk=null;var tkFilter='all';
+var stNM={my:{new:'Baru Masuk',prog:'Dalam Proses',done:'Siap — Pickup',del:'Diambil'},en:{new:'New',prog:'In Progress',done:'Done — Pickup',del:'Collected'}};
+var stB={new:'b1',prog:'b2',done:'b3',del:'b4'};
+var stCyc=['new','prog','done','del'];
+
+var posItems=[];
+var cart={};var curPCat='all';var editingItemId='';var pendingCheckout=null;
+var paymentSettings={type:'Bank Transfer / QR',bank:'Maybank',account:'5620 1234 9876',holder:'LUBUK IT / PhoneFix Pro',qrLabel:'DuitNow QR'};
+
+var stocks=[];
+var stkFilter='all';
+
+function findStockForItem(item){
+  if(!item)return null;
+  return stocks.find(function(s){
+    return (item.sku&&s.sku===item.sku)||
+      (s.nm&&item.nm&&s.nm.toLowerCase()===item.nm.toLowerCase())||
+      (s.nmEN&&item.nmEN&&s.nmEN.toLowerCase()===item.nmEN.toLowerCase());
+  })||null;
+}
+function stockQtyForItem(item){
+  var stock=findStockForItem(item);
+  return stock?Number(stock.qty||0):null;
+}
+function stockMetaForItem(item){
+  var qty=stockQtyForItem(item);
+  if(qty===null)return '';
+  return ' · Stok '+qty;
+}
+function normalizePaymentSettings(){
+  paymentSettings=paymentSettings||{};
+  paymentSettings.type=paymentSettings.type||'Bank Transfer / QR';
+  paymentSettings.bank=paymentSettings.bank||'Maybank';
+  paymentSettings.account=paymentSettings.account||'5620 1234 9876';
+  paymentSettings.holder=paymentSettings.holder||'LUBUK IT / PhoneFix Pro';
+  paymentSettings.qrLabel=paymentSettings.qrLabel||'DuitNow QR';
+  paymentSettings.qrImage=paymentSettings.qrImage||'';
+}
+
+var custs=[];
+var curCust=null;
+var reviews=[];
+var curStar=0;
+var photos={};
+var sales=[];
+var staffReports=[];
+var STORE_KEY='phonefix-pro-v13-clean';
+var THEME_KEY='phonefix-pro-theme';
+var learnFilter='all';
+var scanStream=null;
+var scanTimer=null;
+var scanDetector=null;
+var pendingEvidenceRaw='';
+var pendingEvidenceLabeled='';
+var pendingDepositReceiptRaw='';
+var pendingFullReceiptRaw='';
+var APP_TEST_URL='http://127.0.0.1:5174/index.html';
+var SESSION_KEY='phonefix-pro-session';
+var CLOUD_CONFIG_KEY='phonefix-pro-cloud-config';
+var USERS={
+  admin:{pin:'Padugiler01@',role:'admin',name:'Admin',email:'admin',status:'approved'}
+};
+var signupRequests=[];
+var currentUser=null;
+var cloudConfig=null;
+var cloudDb=null;
+var cloudAuth=null;
+var cloudUnsub=null;
+var applyingCloud=false;
+var syncTimer=null;
+var lastCloudAt=0;
+var learnGuides=[
+  {cat:'screen',ico:'📱',title:'Screen / LCD Replacement',sub:'Untuk iPhone dan Android: buka casing, disconnect battery, angkat screen, pindahkan sensor, pasang adhesive baru.',steps:['Backup dan test touch/Face ID/fingerprint sebelum buka','Panaskan edge ikut manual model, jangan paksa flex cable','Disconnect battery dahulu sebelum cabut display','Pindahkan earpiece/sensor/bracket dengan susunan skru asal','Test touch, brightness, proximity dan seal sebelum tutup'],note:'Checklist: screw mat, label setiap bracket, adhesive baru, test kalis debu sebelum serah.'},
+  {cat:'battery',ico:'🔋',title:'Battery Replacement',sub:'Tukar bateri dengan kawalan risiko puncture, bengkak, dan kalibrasi selepas pasang.',steps:['Periksa bateri kembung dan discharge bawah 25% jika boleh','Disconnect battery, tarik adhesive strip perlahan dan rata','Jika adhesive putus, guna heat/IPA dengan berhati-hati','Pasang battery adhesive baru dan tekan sekata','Charge test, cycle test dan rekod warranty'],note:'Jangan cucuk bateri dengan metal tool. Sediakan sand tray/ruang selamat jika bateri rosak.'},
+  {cat:'charge',ico:'🔌',title:'Charging Port / USB-C / Lightning',sub:'Diagnosis port, sub-board, flex charging, microphone dan antenna sebelum confirm part.',steps:['Bersihkan port dan test cable/adapter lain dahulu','Semak bacaan ampere dan tanda loose connector','Buka mengikut manual, asingkan skru bawah dan shield','Ganti charging flex/sub-board dan test mic/speaker signal','Test fast charge, data transfer dan call mic'],note:'Banyak model Android gabungkan port dengan mic atau antenna. Test semua fungsi sebelum tutup.'},
+  {cat:'camera',ico:'📷',title:'Camera Module Replacement',sub:'Tukar rear/front camera sambil jaga dust, lens cover, Face ID/biometric dan connector kecil.',steps:['Test semua mode camera sebelum buka','Matikan device, disconnect battery dan buka shield kamera','Angkat module dari sisi connector, jangan sentuh lens','Bersihkan dust dengan blower, bukan jari','Test focus, flash, video, portrait dan shake'],note:'Untuk iPhone tertentu, Face ID/TrueDepth sangat sensitif. Jangan pindah komponen biometric tanpa rujukan model.'},
+  {cat:'water',ico:'💧',title:'Water Damage Cleaning',sub:'Proses diagnosis board-level ringan: buka cepat, disconnect power, cleaning, dry, dan test bertahap.',steps:['Jangan charge device yang baru kena air','Buka casing dan disconnect battery segera','Foto keadaan awal untuk bukti customer','Bersihkan corrosion dengan IPA dan brush lembut','Dry sepenuhnya, test board, screen, camera, speaker dan charging'],note:'Water damage tiada guarantee penuh. Catat semua part terjejas sebelum sebut harga final.'}
+];
+
+function cleanTxt(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function moneyNum(v){return parseFloat(String(v||0).replace(/[^\d.]/g,''))||0;}
+function todayLabel(){return new Date().toLocaleDateString(lang==='en'?'en-MY':'ms-MY',{day:'numeric',month:'short'});}
+function saveState(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify(currentState()));
+    scheduleCloudPush();
+  }catch(e){console.warn('PhoneFix Pro save failed',e);}
+}
+function loadState(){
+  try{
+    var raw=localStorage.getItem(STORE_KEY);if(!raw)return;
+    var s=JSON.parse(raw);
+    if(s.lang)lang=s.lang;
+    if(s.users)USERS=Object.assign(defaultUsers(),s.users);
+    if(Array.isArray(s.signupRequests))signupRequests=s.signupRequests;
+    if(Array.isArray(s.tickets))tickets=s.tickets;
+    if(s.nextId)nextId=s.nextId;
+    if(Array.isArray(s.posItems))posItems=s.posItems;
+    if(Array.isArray(s.stocks))stocks=s.stocks;
+    if(Array.isArray(s.custs))custs=s.custs;
+    if(Array.isArray(s.reviews))reviews=s.reviews;
+    if(s.photos)photos=s.photos;
+    if(Array.isArray(s.sales))sales=s.sales;
+    if(Array.isArray(s.staffReports))staffReports=s.staffReports;
+    if(s.paymentSettings)paymentSettings=s.paymentSettings;
+    curTk=tickets[0]||null;curCust=custs[0]||null;
+    normalizePaymentSettings();normalizeData();
+  }catch(e){console.warn('PhoneFix Pro load failed',e);}
+}
+function resetDemo(){
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+}
+function isAdmin(){return currentUser&&currentUser.role==='admin';}
+function showLogin(){
+  var ov=document.getElementById('login-overlay');if(ov)ov.classList.add('on');
+}
+function hideLogin(){
+  var ov=document.getElementById('login-overlay');if(ov)ov.classList.remove('on');
+}
+function loadSession(){
+  try{currentUser=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');}catch(e){currentUser=null;}
+  if(currentUser&&(!USERS[currentUser.username]||USERS[currentUser.username].status==='rejected'))currentUser=null;
+}
+function defaultUsers(){
+  return {admin:{pin:'Padugiler01@',role:'admin',name:'Admin',email:'admin',status:'approved'}};
+}
+function showSignupForm(){
+  var lf=document.getElementById('login-form'),sf=document.getElementById('signup-form'),pb=document.getElementById('signup-pending-box');
+  if(lf)lf.style.display='none';if(sf)sf.style.display='block';if(pb)pb.style.display='none';
+}
+function showLoginForm(){
+  var lf=document.getElementById('login-form'),sf=document.getElementById('signup-form'),pb=document.getElementById('signup-pending-box');
+  if(lf)lf.style.display='block';if(sf)sf.style.display='none';if(pb)pb.style.display='none';
+  clearLoginWarning();
+}
+function showLoginWarning(msg){
+  var box=document.getElementById('login-warning'),txt=document.getElementById('login-warning-text');
+  if(txt)txt.textContent=msg;
+  if(box)box.style.display='flex';
+  toast(msg);
+}
+function clearLoginWarning(){
+  var box=document.getElementById('login-warning');
+  if(box)box.style.display='none';
+}
+function loginUser(){
+  var u=(document.getElementById('login-user').value||'').trim().toLowerCase();
+  var p=(document.getElementById('login-pin').value||'').trim();
+  var found=USERS[u];
+  clearLoginWarning();
+  if(!u){showLoginWarning('Masukkan email atau username dahulu.');return;}
+  if(!p){showLoginWarning('Masukkan password dahulu.');return;}
+  if(!found){
+    var req=signupRequests.find(function(r){return r.email===u;});
+    if(req&&req.status==='pending')showPendingMessage('Your request is still pending. Tunggu admin approve account anda.');
+    else if(req&&req.status==='rejected')showPendingMessage('Request anda tidak diluluskan. Sila hubungi admin.');
+    else showLoginWarning('Account tidak dijumpai. Sila signup dahulu atau semak email/username.');
+    return;
+  }
+  if(found.pin!==p){
+    showLoginWarning('Password salah. Sila cuba semula.');
+    return;
+  }
+  if(found.status&&found.status!=='approved'){showPendingMessage('Your request has been pending. Tunggu admin approve account anda.');return;}
+  currentUser={username:u,role:found.role,name:found.name,loginAt:new Date().toISOString()};
+  localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));
+  hideLogin();applyRoleAccess();goTab('ticket');toast('Login sebagai '+found.name);
+}
+function showPendingMessage(msg){
+  showSignupForm();
+  var pb=document.getElementById('signup-pending-box'),pm=document.getElementById('signup-pending-msg');
+  if(pm)pm.textContent=msg;if(pb)pb.style.display='block';
+}
+function signupUser(){
+  var name=(document.getElementById('su-name').value||'').trim();
+  var email=(document.getElementById('su-email').value||'').trim().toLowerCase();
+  var pass=(document.getElementById('su-pass').value||'').trim();
+  if(!name||!email||!pass){toast('Isi nama, email dan password dahulu.');return;}
+  if(pass.length<4){toast('Password minimum 4 aksara.');return;}
+  if(USERS[email]){toast('Account ini sudah wujud. Sila login.');showLoginForm();return;}
+  var existing=signupRequests.find(function(r){return r.email===email&&r.status==='pending';});
+  if(existing){showPendingMessage('Your request has been pending. Tunggu admin approve account anda.');return;}
+  signupRequests.unshift({id:'REQ-'+Date.now(),name:name,email:email,password:pass,status:'pending',requestedAt:new Date().toISOString()});
+  saveState();renderAccountRequests();showPendingMessage('Your request has been pending. Tunggu admin approve account anda.');
+}
+function logoutUser(){
+  localStorage.removeItem(SESSION_KEY);currentUser=null;showLogin();applyRoleAccess();
+}
+function applyRoleAccess(){
+  var role=currentUser?currentUser.role:'locked';
+  var badge=document.getElementById('role-badge');if(badge)badge.textContent=role==='admin'?'Admin':role==='staff'?'Staff':'Login';
+  document.querySelectorAll('.admin-only,.cost-sensitive').forEach(function(el){el.classList.toggle('staff-hidden',role!=='admin');});
+  ['pr-cost','sv-cost','pk-cost'].forEach(function(id){var el=document.getElementById(id);if(el&&el.closest('.ff'))el.closest('.ff').classList.toggle('staff-hidden',role!=='admin');});
+  var navRpt=document.getElementById('nav-laporan');if(navRpt)navRpt.textContent=role==='admin'?'Laporan':'Report';
+  if(role!=='admin'&&document.querySelector('.pg.act')&&document.querySelector('.pg.act').id==='p-laporan')goTab('laporan');
+  renderPOS();renderAllItems();renderStock();updateMetrics();
+  renderStaffReports();renderAccountRequests();
+}
+function requireAdmin(){
+  if(isAdmin())return true;
+  toast('Fungsi ini untuk admin sahaja.');return false;
+}
+function normalizeData(){
+  var iconMap={case:'🛡️',screen:'📱',cable:'🔌',audio:'🎧',service:'🧰',pkg:'🎁'};
+  posItems.forEach(function(p){
+    p.cost=Number(p.cost||Math.round((p.pr||0)*0.55));
+    p.warrantyDays=Number(p.warrantyDays||(p.cat==='service'||p.cat==='pkg'?30:7));
+    p.icon=p.icon||iconMap[p.cat]||'📦';
+    p.sku=p.sku||p.id;
+  });
+  stocks.forEach(function(s){
+    s.cost=Number(s.cost||Math.round((s.sell||0)*0.55)||0);
+    s.sell=Number(s.sell||((posItems.find(function(p){return p.nm===s.nm||p.nmEN===s.nmEN;})||{}).pr)||0);
+    s.warrantyDays=Number(s.warrantyDays||7);
+    s.icon=s.icon||(s.cat==='part'?'🧰':'📦');
+  });
+  custs.forEach(function(c){
+    c.warranties=c.warranties||[];
+    if(!c.warranties.length&&c.hist&&c.hist.length){
+      c.warranties.push({ticket:c.hist[0].split(':')[0],item:c.last||'Repair service',start:new Date().toISOString(),days:30});
+    }
+  });
+}
+function warrantyDaysLeft(w){
+  var start=new Date(w.start||Date.now()).getTime();
+  var end=start+(Number(w.days)||0)*86400000;
+  return Math.ceil((end-Date.now())/86400000);
+}
+function syncLangButtons(){
+  ['lang-my','staff-lang-my'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('on',lang==='my');});
+  ['lang-en','staff-lang-en'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('on',lang==='en');});
+}
+function syncThemeButtons(mode){
+  ['theme-light','staff-theme-light'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('on',mode==='light');});
+  ['theme-dark','staff-theme-dark'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('on',mode==='dark');});
+}
+function setThemeMode(mode){
+  if(mode!=='light'&&mode!=='dark')mode='light';
+  document.body.classList.toggle('theme-light',mode==='light');
+  document.body.classList.toggle('theme-dark',mode==='dark');
+  syncThemeButtons(mode);
+  localStorage.setItem(THEME_KEY,mode);
+  toast(mode==='dark'?'Dark mode aktif':'Light mode aktif');
+}
+function loadThemeMode(){
+  var saved=localStorage.getItem(THEME_KEY);
+  if(saved==='light'||saved==='dark')setThemeMode(saved);
+  else{
+    var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setThemeMode(prefersDark?'dark':'light');
+  }
+}
+function openStaffSettings(){
+  syncLangButtons();
+  var saved=localStorage.getItem(THEME_KEY);
+  if(saved==='light'||saved==='dark')syncThemeButtons(saved);
+  var ov=document.getElementById('staff-settings-overlay');if(ov)ov.classList.add('on');
+}
+function closeStaffSettings(){
+  var ov=document.getElementById('staff-settings-overlay');if(ov)ov.classList.remove('on');
+}
+function openReportSettings(){
+  if(!requireAdmin())return;
+  syncLangButtons();
+  var saved=localStorage.getItem(THEME_KEY);
+  if(saved==='light'||saved==='dark')syncThemeButtons(saved);
+  normalizePaymentSettings();
+  var type=document.getElementById('payset-type');if(type)type.value=paymentSettings.type;
+  var bank=document.getElementById('payset-bank');if(bank)bank.value=paymentSettings.bank;
+  var acc=document.getElementById('payset-account');if(acc)acc.value=paymentSettings.account;
+  var holder=document.getElementById('payset-holder');if(holder)holder.value=paymentSettings.holder;
+  var qr=document.getElementById('payset-qr');if(qr)qr.value=paymentSettings.qrLabel;
+  renderPaymentSettingPreview();
+  var ov=document.getElementById('report-settings-overlay');if(ov)ov.classList.add('on');
+}
+function closeReportSettings(){
+  var ov=document.getElementById('report-settings-overlay');if(ov)ov.classList.remove('on');
+}
+function openPaymentSettings(){
+  openReportSettings();
+}
+function openAccountRequests(){
+  if(!requireAdmin())return;
+  renderAccountRequests();
+  var ov=document.getElementById('account-request-overlay');if(ov)ov.classList.add('on');
+}
+function closeAccountRequests(){
+  var ov=document.getElementById('account-request-overlay');if(ov)ov.classList.remove('on');
+}
+function renderAccountRequests(){
+  var el=document.getElementById('account-request-list');if(!el)return;
+  var pending=signupRequests.filter(function(r){return r.status==='pending';});
+  var history=signupRequests.filter(function(r){return r.status!=='pending';}).slice(0,8);
+  var html='';
+  html+=pending.map(function(r){
+    return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:8px 0;"><div class="dr" style="border:none;padding:0;align-items:flex-start;"><span class="dl"><b>'+cleanTxt(r.name)+'</b><br><span class="item-meta">'+cleanTxt(r.email)+' · '+reportDate(r.requestedAt)+'</span></span><span class="bdg b2">Pending</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;"><select id="role-'+cleanTxt(r.id)+'" style="width:100%;padding:8px;border-radius:8px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="staff">Staff</option><option value="admin">Admin</option></select><button class="sbtn2" onclick="approveSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin:0;">Approve</button></div><button class="sbtn2" onclick="rejectSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin-top:6px;">Reject</button></div>';
+  }).join('');
+  if(!pending.length)html+='<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Tiada request profile baru.</div>';
+  if(history.length){
+    html+='<div class="section-hdr" style="margin-top:10px;">History</div>'+history.map(function(r){
+      return '<div class="dr"><span class="dl">'+cleanTxt(r.name)+'<br><span class="item-meta">'+cleanTxt(r.email)+'</span></span><span class="bdg '+(r.status==='approved'?'b3':'b4')+'">'+cleanTxt(r.status)+'</span></div>';
+    }).join('');
+  }
+  el.innerHTML=html;
+}
+function approveSignup(id){
+  if(!requireAdmin())return;
+  var r=signupRequests.find(function(x){return x.id===id;});if(!r)return;
+  var roleEl=document.getElementById('role-'+id);
+  var role=(roleEl&&roleEl.value)||'staff';
+  USERS[r.email]={pin:r.password,role:role,name:r.name,email:r.email,status:'approved',approvedAt:new Date().toISOString(),approvedBy:currentUser&&currentUser.username};
+  r.status='approved';r.role=role;r.approvedAt=new Date().toISOString();r.approvedBy=currentUser&&currentUser.username;
+  saveState();renderAccountRequests();toast('Account approved sebagai '+role+'.');
+}
+function rejectSignup(id){
+  if(!requireAdmin())return;
+  var r=signupRequests.find(function(x){return x.id===id;});if(!r)return;
+  r.status='rejected';r.rejectedAt=new Date().toISOString();r.rejectedBy=currentUser&&currentUser.username;
+  saveState();renderAccountRequests();toast('Request ditolak.');
+}
+function renderPaymentSettingPreview(){
+  var img=document.getElementById('payset-qr-preview');if(!img)return;
+  if(paymentSettings.qrImage){img.src=paymentSettings.qrImage;img.classList.add('on');}
+  else{img.src='';img.classList.remove('on');}
+}
+function loadPaymentQRImage(input){
+  if(!requireAdmin())return;
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    paymentSettings.qrImage=reader.result;
+    renderPaymentSettingPreview();
+    toast('QR bank dimuat. Tekan Simpan Payment Setting.');
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function clearPaymentQR(){
+  if(!requireAdmin())return;
+  paymentSettings.qrImage='';
+  renderPaymentSettingPreview();
+  toast('QR bank dibuang. Tekan Simpan Payment Setting.');
+}
+function savePaymentSettings(){
+  if(!requireAdmin())return;
+  var oldQr=paymentSettings.qrImage||'';
+  paymentSettings={
+    type:(document.getElementById('payset-type')||{}).value||'Bank Transfer / QR',
+    bank:(document.getElementById('payset-bank')||{}).value||'Maybank',
+    account:(document.getElementById('payset-account')||{}).value||'',
+    holder:(document.getElementById('payset-holder')||{}).value||'',
+    qrLabel:(document.getElementById('payset-qr')||{}).value||'DuitNow QR',
+    qrImage:oldQr
+  };
+  normalizePaymentSettings();saveState();
+  renderPaymentSettingPreview();
+  toast('Payment setting disimpan.');
+}
+function updateMetrics(){
+  var active=tickets.filter(function(t){return t.st!=='del';}).length;
+  var ready=tickets.filter(function(t){return t.st==='done';}).length;
+  var monthRevenue=tickets.reduce(function(sum,t){return sum+moneyNum(t.pr);},0)+sales.reduce(function(sum,s){return sum+s.total;},0);
+  var monthCost=sales.reduce(function(sum,s){return sum+(s.cost||0);},0)+tickets.reduce(function(sum,t){return sum+(Number(t.cost)||Math.round(moneyNum(t.pr)*0.5));},0);
+  var net=monthRevenue-monthCost;
+  var hActive=document.getElementById('h-active');if(hActive)hActive.textContent=active;
+  var vals=document.querySelectorAll('#p-ticket .mv');
+  if(vals[1])vals[1].textContent=ready;
+  if(vals[2])vals[2].textContent='RM '+sales.reduce(function(sum,s){return sum+s.total;},0);
+  if(vals[3])vals[3].textContent=tickets.length;
+  document.querySelectorAll('.rpt-big .rv').forEach(function(el){el.textContent='RM '+monthRevenue.toLocaleString('ms-MY');});
+  var profitRows=document.querySelectorAll('#p-laporan .card .dr .dv');
+  var gross=document.querySelector('#lbl-gross')&&document.querySelector('#lbl-gross').nextElementSibling;
+  var cost=document.querySelector('#lbl-parts-cost')&&document.querySelector('#lbl-parts-cost').nextElementSibling;
+  var netEl=document.querySelector('#lbl-net-profit')&&document.querySelector('#lbl-net-profit').nextElementSibling;
+  var margin=document.querySelector('#lbl-margin-pct')&&document.querySelector('#lbl-margin-pct').nextElementSibling;
+  if(gross)gross.textContent='RM '+monthRevenue.toLocaleString('ms-MY');
+  if(cost)cost.textContent='RM '+monthCost.toLocaleString('ms-MY');
+  if(netEl)netEl.textContent='RM '+net.toLocaleString('ms-MY');
+  if(margin)margin.textContent=(monthRevenue?Math.round(net/monthRevenue*100):0)+'%';
+  var db=document.getElementById('db-size');if(db)db.textContent=Math.round((localStorage.getItem(STORE_KEY)||'').length/1024)+' KB';
+}
+function updateCustomerFromTicket(tk,phone){
+  var c=custs.find(function(x){return x.nm.toLowerCase()===tk.nm.toLowerCase();});
+  var hist=tk.id+': '+tk.prb+' — '+tk.pr;
+  var warranty={ticket:tk.id,item:tk.dev+' - '+tk.prb,start:new Date().toISOString(),days:Number(tk.warrantyDays||30)};
+  if(c){
+    c.ph=phone||c.ph;c.v=(c.v||0)+1;c.spend='RM '+(moneyNum(c.spend)+moneyNum(tk.pr));c.last=tk.dev;
+    c.hist=c.hist||[];c.hist.unshift(hist);
+    c.warranties=c.warranties||[];c.warranties.unshift(warranty);
+  }else{
+    custs.unshift({nm:tk.nm,ph:phone||'—',v:1,spend:tk.pr,last:tk.dev,since:todayLabel(),hist:[hist],warranties:[warranty]});
+  }
+}
+function reduceStockForCart(){
+  Object.keys(cart).forEach(function(id){
+    var item=posItems.find(function(p){return p.id===id;});if(!item||!cart[id])return;
+    var stock=findStockForItem(item);
+    if(stock)stock.qty=Math.max(0,stock.qty-cart[id]);
+  });
+}
+function currentState(){
+  normalizePaymentSettings();
+  return {version:'1.5-clean',exportedAt:new Date().toISOString(),updatedAt:Date.now(),updatedBy:currentUser?currentUser.username:'local',lang:lang,users:USERS,signupRequests:signupRequests,tickets:tickets,nextId:nextId,posItems:posItems,stocks:stocks,custs:custs,reviews:reviews,photos:photos,sales:sales,staffReports:staffReports,paymentSettings:paymentSettings};
+}
+function setSyncStatus(text,state){
+  var s=document.getElementById('sync-status');if(s)s.textContent=text;
+  var d=document.getElementById('sync-dot');if(d){d.classList.toggle('on',state==='on');d.classList.toggle('err',state==='err');}
+}
+function loadCloudConfig(){
+  try{cloudConfig=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null');}catch(e){cloudConfig=null;}
+  if(!cloudConfig)return;
+  ['apiKey','authDomain','projectId','appId','docId'].forEach(function(k){var el=document.getElementById('fb-'+k);if(el)el.value=cloudConfig[k]||'';});
+}
+function readCloudForm(){
+  return {
+    apiKey:(document.getElementById('fb-apiKey')||{}).value||'',
+    authDomain:(document.getElementById('fb-authDomain')||{}).value||'',
+    projectId:(document.getElementById('fb-projectId')||{}).value||'',
+    appId:(document.getElementById('fb-appId')||{}).value||'',
+    docId:((document.getElementById('fb-docId')||{}).value||'lubuk-it-main').trim()
+  };
+}
+function saveCloudConfig(){
+  if(!requireAdmin())return;
+  cloudConfig=readCloudForm();
+  if(!cloudConfig.apiKey||!cloudConfig.projectId||!cloudConfig.appId){toast('Isi Firebase apiKey, projectId dan appId dahulu.');return;}
+  localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cloudConfig));
+  connectCloud();
+}
+function connectCloud(){
+  if(!cloudConfig||!cloudConfig.apiKey){setSyncStatus('Offline local','off');return;}
+  if(typeof firebase==='undefined'||!firebase.firestore||!firebase.auth){setSyncStatus('Firebase belum load / offline','err');return;}
+  try{
+    var appName='phonefix-pro-cloud';
+    var app=firebase.apps.find(function(a){return a.name===appName;})||firebase.initializeApp({
+      apiKey:cloudConfig.apiKey,
+      authDomain:cloudConfig.authDomain,
+      projectId:cloudConfig.projectId,
+      appId:cloudConfig.appId
+    },appName);
+    cloudAuth=app.auth();
+    cloudDb=app.firestore();
+    setSyncStatus('Firebase auth connecting...','on');
+    var ready=cloudAuth.currentUser?Promise.resolve(cloudAuth.currentUser):cloudAuth.signInAnonymously().then(function(res){return res.user;});
+    ready.then(function(){startCloudListener();}).catch(function(){setSyncStatus('Firebase Auth gagal - enable Anonymous Auth','err');});
+  }catch(e){setSyncStatus('Cloud config error','err');}
+}
+function startCloudListener(){
+  if(!cloudDb||!cloudConfig)return;
+  if(cloudUnsub)cloudUnsub();
+  var ref=cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main');
+  cloudUnsub=ref.onSnapshot(function(doc){
+    if(!doc.exists){setSyncStatus('Cloud ready - belum ada data','on');return;}
+    var remote=doc.data().state;if(!remote)return;
+    if(applyingCloud)return;
+    if((remote.updatedAt||0)>lastCloudAt&&remote.updatedBy!==(currentUser&&currentUser.username)){
+      applyCloudState(remote);
+    }
+    lastCloudAt=Math.max(lastCloudAt,remote.updatedAt||0);
+    setSyncStatus('Cloud synced','on');
+  },function(){setSyncStatus('Cloud error - semak rules/config','err');});
+  setSyncStatus('Cloud connecting...','on');
+}
+function applyCloudState(s){
+  applyingCloud=true;
+  USERS=s.users?Object.assign(defaultUsers(),s.users):USERS;signupRequests=s.signupRequests||signupRequests;tickets=s.tickets||tickets;nextId=s.nextId||nextId;posItems=s.posItems||posItems;stocks=s.stocks||stocks;custs=s.custs||custs;reviews=s.reviews||reviews;photos=s.photos||photos;sales=s.sales||sales;staffReports=s.staffReports||staffReports;paymentSettings=s.paymentSettings||paymentSettings;lang=s.lang||lang;
+  curTk=tickets[0]||null;curCust=custs[0]||null;normalizePaymentSettings();normalizeData();
+  localStorage.setItem(STORE_KEY,JSON.stringify(s));
+  syncLangButtons();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();
+  applyingCloud=false;toast('Data cloud terbaru dimuat.');
+}
+function scheduleCloudPush(){
+  if(applyingCloud||!cloudDb||!cloudConfig)return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(function(){pushCloudNow(true);},900);
+}
+function pushCloudNow(silent){
+  if(!silent&&!requireAdmin())return;
+  if(silent&&!currentUser)return;
+  if(!cloudDb||!cloudConfig){if(!silent)toast('Cloud belum connected. Isi Firebase config dahulu.');return;}
+  var state=currentState();lastCloudAt=state.updatedAt;
+  cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main').set({state:state,updatedAt:state.updatedAt},{merge:true}).then(function(){
+    setSyncStatus('Uploaded '+new Date().toLocaleTimeString('ms-MY'),'on');if(!silent)toast('Data diupload ke cloud.');
+  }).catch(function(){setSyncStatus('Upload gagal','err');if(!silent)toast('Upload gagal. Semak internet/rules Firebase.');});
+}
+function pullCloudNow(){
+  if(!requireAdmin())return;
+  if(!cloudDb||!cloudConfig){toast('Cloud belum connected.');return;}
+  cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main').get().then(function(doc){
+    if(!doc.exists||!doc.data().state){toast('Cloud belum ada data.');return;}
+    applyCloudState(doc.data().state);
+  }).catch(function(){toast('Download cloud gagal.');});
+}
+function phoneForTicket(tk){
+  if(!tk)return '';
+  if(tk.ph)return tk.ph;
+  var c=custs.find(function(x){return x.nm&&tk.nm&&x.nm.toLowerCase()===tk.nm.toLowerCase();});
+  return c&&c.ph?c.ph:'';
+}
+function normalizeWhatsAppPhone(phone){
+  var n=String(phone||'').replace(/[^\d]/g,'');
+  if(!n)return '';
+  if(n.indexOf('60')===0)return n;
+  if(n.charAt(0)==='0')return '6'+n;
+  if(n.charAt(0)==='1')return '60'+n;
+  return n;
+}
+function normalizeWhatsAppText(text){
+  return String(text||'').replace(/\\n/g,'\n');
+}
+function openWhatsAppMessage(phone,msg){
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(normalizeWhatsAppText(msg)),'_blank');
+}
+function sendTicketWhatsApp(){
+  var tk=curTk||tickets[0];var raw=phoneForTicket(tk);var phone=normalizeWhatsAppPhone(raw);
+  if(!phone){toast(lang==='en'?'No phone number for this customer.':'Tiada nombor telefon untuk customer ini.');return;}
+  var sn=stNM[lang]||stNM.my;
+  var msg=[
+    'Hi '+tk.nm+', update status repair anda:',
+    '',
+    'No Ticket: '+tk.id,
+    'Peranti: '+tk.dev,
+    'Masalah: '+tk.prb,
+    'Status: '+sn[tk.st],
+    'Jumlah: '+tk.pr,
+    '',
+    'Link semakan:',
+    trackerLink(),
+    '',
+    'Terima kasih. - PhoneFix Pro'
+  ].join('\n');
+  openWhatsAppMessage(phone,msg);
+  toastM('wa_sent');
+}
+async function sendNewTicketWhatsApp(tk){
+  var phone=normalizeWhatsAppPhone(phoneForTicket(tk));
+  if(!phone){toast('Ticket disimpan. Isi nombor telefon untuk auto WhatsApp.');return;}
+  var sn=stNM[lang]||stNM.my;
+  var link=location.origin&&location.origin!=='null'?trackerLink():location.href.split('#')[0]+'#ticket='+encodeURIComponent(tk.id);
+  var msg='Hi '+tk.nm+', terima kasih kerana mempercayai PhoneFix Pro.\n\n'
+    +'Ticket repair anda telah berjaya dibuka.\n'
+    +'No Ticket: '+tk.id+'\n'
+    +'Peranti: '+tk.dev+'\n'
+    +'Masalah: '+tk.prb+'\n'
+    +'Status: '+sn[tk.st]+'\n'
+    +'Anggaran jumlah: '+tk.pr+'\n\n'
+    +'Anda boleh semak detail dan status repair di link ini:\n'+link+'\n\n'
+    +'Kami akan update dari semasa ke semasa. Terima kasih.';
+  openWhatsAppMessage(phone,msg);
+  if(tk.evidence&&tk.evidence.labeled){
+    setTimeout(async function(){
+      var shared=await shareEvidenceImage(tk);
+      if(!shared){toast('WhatsApp dibuka. Gambar bukti sudah dimuat turun untuk dihantar.');}
+    },700);
+  }
+  toast('Ticket disimpan. WhatsApp pelanggan dibuka.');
+}
+function copyText(text,okKey){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){toastM(okKey);}).catch(function(){fallbackCopy(text,okKey);});
+  }else fallbackCopy(text,okKey);
+}
+function fallbackCopy(text,okKey){
+  var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toastM(okKey);
+}
+function trackerLink(){
+  if(!curTk&&!tickets[0])return APP_TEST_URL;
+  var id=encodeURIComponent((curTk||tickets[0]).id);
+  if(location.protocol==='file:')return APP_TEST_URL+'#ticket='+id;
+  return location.origin+location.pathname+'#ticket='+id;
+}
+function copyQR(){copyText(trackerLink(),'qr_copied');}
+function printQR(){
+  var sn=stNM[lang]||stNM.my;var d=curTk||tickets[0];
+  if(!d){toast('Tiada ticket untuk dicetak.');return;}
+  var w=window.open('','_blank');
+  w.document.write('<title>PhoneFix QR '+cleanTxt(d.id)+'</title><body style="font-family:Arial;text-align:center;padding:28px;"><h2>PhoneFix Pro</h2><p>Ticket #'+cleanTxt(d.id)+'</p><div style="font-size:13px;margin:8px 0;">'+cleanTxt(d.nm)+' - '+cleanTxt(sn[d.st])+'</div><div style="display:grid;grid-template-columns:repeat(5,24px);gap:4px;justify-content:center;margin:18px 0;">'+Array.from({length:25}).map(function(_,i){return '<span style="width:24px;height:24px;background:'+(i%3===0||i%7===0?'#111':'#fff')+';border:1px solid #111"></span>';}).join('')+'</div><p style="font-size:12px;">'+cleanTxt(trackerLink())+'</p></body>');
+  w.document.close();w.print();toastM('qr_print');
+}
+function exportReport(){
+  var totalSales=sales.reduce(function(sum,s){return sum+s.total;},0);
+  var repairs=tickets.reduce(function(sum,t){return sum+moneyNum(t.pr);},0);
+  var costs=sales.reduce(function(sum,s){return sum+(s.cost||0);},0)+tickets.reduce(function(sum,t){return sum+(Number(t.cost)||Math.round(moneyNum(t.pr)*0.5));},0);
+  var gross=repairs+totalSales;var net=gross-costs;
+  var w=window.open('','_blank');
+  var rows=tickets.map(function(t){return '<tr><td>'+cleanTxt(t.id)+'</td><td>'+cleanTxt(t.nm)+'</td><td>'+cleanTxt(t.dev)+'</td><td>'+cleanTxt(t.prb)+'</td><td>'+cleanTxt(t.pr)+'</td></tr>';}).join('');
+  w.document.write('<title>PhoneFix Pro Report</title><body style="font-family:Arial;padding:24px;color:#222;"><h1>PhoneFix Pro Report</h1><p>'+new Date().toLocaleString('ms-MY')+'</p><h3>Ringkasan</h3><p>Ticket: '+tickets.length+'<br>Hasil repair: RM '+repairs.toLocaleString('ms-MY')+'<br>Hasil POS: RM '+totalSales.toLocaleString('ms-MY')+'<br>Kos: RM '+costs.toLocaleString('ms-MY')+'<br>Untung bersih: RM '+net.toLocaleString('ms-MY')+'</p><h3>Ticket</h3><table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:12px;"><tr><th>ID</th><th>Pelanggan</th><th>Peranti</th><th>Masalah</th><th>Harga</th></tr>'+rows+'</table></body>');
+  w.document.close();w.print();toastM('export_pdf');
+}
+function exportDB(){
+  if(!requireAdmin())return;
+  saveState();
+  var data=JSON.stringify(currentState(),null,2);
+  var blob=new Blob([data],{type:'application/json'});
+  var a=document.createElement('a');
+  var month=new Date().toISOString().slice(0,7);
+  a.href=URL.createObjectURL(blob);a.download='phonefix-pro-database-'+month+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  toast('Database bulan ini diexport.');
+}
+function importDB(input){
+  if(!requireAdmin())return;
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    try{
+      var s=JSON.parse(reader.result);
+      if(!Array.isArray(s.tickets)||!Array.isArray(s.posItems)||!Array.isArray(s.custs))throw new Error('Invalid database');
+      USERS=s.users?Object.assign(defaultUsers(),s.users):USERS;signupRequests=s.signupRequests||[];tickets=s.tickets;nextId=s.nextId||1;posItems=s.posItems;stocks=s.stocks||[];custs=s.custs;reviews=s.reviews||[];photos=s.photos||{};sales=s.sales||[];staffReports=s.staffReports||[];paymentSettings=s.paymentSettings||paymentSettings;lang=s.lang||lang;
+      curTk=tickets[0]||null;curCust=custs[0]||null;normalizePaymentSettings();normalizeData();saveState();
+      syncLangButtons();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();
+      toast('Database lama berjaya diimport.');
+    }catch(e){toast('Fail database tidak sah.');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+function setLearnF(el,f){
+  document.querySelectorAll('#learn-filter .pill').forEach(function(p){p.classList.remove('on');});
+  el.classList.add('on');learnFilter=f;renderLearn();
+}
+function renderLearn(){
+  var el=document.getElementById('learn-list');if(!el)return;
+  var filt=learnGuides.filter(function(g){return learnFilter==='all'||g.cat===learnFilter;});
+  el.innerHTML=filt.map(function(g){
+    return '<div class="learn-card"><div class="learn-top"><div class="learn-img">'+cleanTxt(g.ico)+'</div><div><div class="learn-title">'+cleanTxt(g.title)+'</div><div class="learn-sub">'+cleanTxt(g.sub)+'</div></div></div><ol class="learn-list">'+g.steps.map(function(s){return '<li>'+cleanTxt(s)+'</li>';}).join('')+'</ol><div class="learn-note">'+cleanTxt(g.note)+'</div></div>';
+  }).join('')+'<button class="sbtn2" onclick="openIFixit()">Buka iFixit Manual Penuh</button>';
+}
+function openIFixit(){
+  window.open('https://www.ifixit.com/Device/Phone','_blank');
+}
+function submitStaffReport(){
+  var msg=(document.getElementById('sr-msg')||{}).value||'';
+  msg=msg.trim();
+  if(!msg){toast('Tulis detail report dahulu.');return;}
+  var rep={
+    id:'RP-'+Date.now(),
+    type:(document.getElementById('sr-type')||{}).value||'Report',
+    ref:(document.getElementById('sr-ref')||{}).value||'',
+    msg:msg,
+    by:(currentUser&&currentUser.name)||'Staff',
+    byUser:(currentUser&&currentUser.username)||'staff',
+    date:new Date().toISOString(),
+    status:'open',
+    feedback:''
+  };
+  staffReports.unshift(rep);
+  ['sr-ref','sr-msg'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderStaffReports();saveState();toast('Report dihantar kepada admin.');
+}
+function reportDate(iso){try{return new Date(iso).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});}catch(e){return '-';}}
+function renderStaffReports(){
+  var staffEl=document.getElementById('staff-report-list');
+  if(staffEl){
+    var mine=staffReports.filter(function(r){return isAdmin()||!currentUser||r.byUser===(currentUser&&currentUser.username)||r.byUser==='staff';});
+    staffEl.innerHTML=mine.map(function(r){
+      var st=r.status==='closed'?'Selesai':'Open';
+      return '<div class="dr" style="align-items:flex-start;"><span class="dl" style="font-size:10px;"><b>'+cleanTxt(r.type)+'</b> · '+cleanTxt(r.ref||'Tiada rujukan')+'<br>'+cleanTxt(r.msg)+'<br><span class="item-meta">'+cleanTxt(r.by)+' · '+reportDate(r.date)+'</span>'+(r.feedback?'<br><span class="profit-good">Admin: '+cleanTxt(r.feedback)+'</span>':'<br><span class="profit-warn">Menunggu feedback admin</span>')+'</span><span class="bdg '+(r.status==='closed'?'b3':'b2')+'">'+st+'</span></div>';
+    }).join('')||'<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Belum ada report.</div>';
+  }
+  var adminEl=document.getElementById('admin-report-list');
+  if(adminEl){
+    adminEl.innerHTML=staffReports.map(function(r){
+      var st=r.status==='closed'?'Selesai':'Open';
+      return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:7px 0;"><div class="dr" style="border:none;padding:0;"><span class="dl"><b>'+cleanTxt(r.type)+'</b> · '+cleanTxt(r.ref||'Tiada rujukan')+'</span><span class="bdg '+(r.status==='closed'?'b3':'b2')+'">'+st+'</span></div><div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;margin-top:4px;">'+cleanTxt(r.msg)+'</div><div class="item-meta">'+cleanTxt(r.by)+' · '+reportDate(r.date)+'</div><textarea id="fb-'+r.id+'" placeholder="Tulis feedback admin..." style="width:100%;padding:7px 9px;border-radius:7px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:11px;color:var(--color-text-primary);font-family:var(--font-sans);min-height:38px;resize:none;margin:6px 0 4px;">'+cleanTxt(r.feedback||'')+'</textarea><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;"><button class="sbtn2" onclick="saveReportFeedback(&quot;'+r.id+'&quot;)" style="margin:0;">Save Feedback</button><button class="sbtn2" onclick="toggleReportClosed(&quot;'+r.id+'&quot;)" style="margin:0;">'+(r.status==='closed'?'Reopen':'Mark Selesai')+'</button></div></div>';
+    }).join('')||'<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Belum ada staff report.</div>';
+  }
+}
+function saveReportFeedback(id){
+  if(!requireAdmin())return;
+  var r=staffReports.find(function(x){return x.id===id;});if(!r)return;
+  var el=document.getElementById('fb-'+id);r.feedback=(el&&el.value||'').trim();r.status=r.feedback?'closed':r.status;r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;
+  renderStaffReports();saveState();toast('Feedback disimpan.');
+}
+function toggleReportClosed(id){
+  if(!requireAdmin())return;
+  var r=staffReports.find(function(x){return x.id===id;});if(!r)return;
+  r.status=r.status==='closed'?'open':'closed';r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;
+  renderStaffReports();saveState();
+}
+function renderPhotos(){
+  var holder=document.querySelector('#p-photo .card');if(!holder||!curTk)return;
+  var p=photos[curTk.id]||{};
+  var list='<h3>'+(lang==='en'?'Saved photos':'Foto tersimpan')+'</h3>';
+  ['before','after','deposit','fullPayment'].forEach(function(type){
+    if(p[type])list+='<div style="display:flex;align-items:center;gap:7px;padding:5px 0;"><img src="'+p[type]+'" style="width:42px;height:42px;border-radius:7px;object-fit:cover;"><div><div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+type+'_'+cleanTxt(curTk.id)+'.jpg</div><div style="font-size:9px;color:var(--color-text-tertiary);">'+todayLabel()+'</div></div><span class="bdg b4" style="margin-left:auto;">'+type+'</span></div>';
+  });
+  if(!p.before&&!p.after&&!p.deposit&&!p.fullPayment)list+='<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">'+(lang==='en'?'No photos yet':'Belum ada foto')+'</div>';
+  holder.innerHTML=list;
+}
+function capturePhoto(type){
+  var input=document.createElement('input');input.type='file';input.accept='image/*';input.capture='environment';
+  input.onchange=function(){
+    var file=input.files&&input.files[0];if(!file)return;
+    var reader=new FileReader();
+    reader.onload=async function(){
+      var labeled=await generateEvidenceImage(reader.result,buildPhotoMeta(curTk,type));
+      photos[curTk.id]=photos[curTk.id]||{};
+      photos[curTk.id][type]=labeled||reader.result;
+      queueImageDownloads([{data:labeled||reader.result,name:'PhoneFix-Pro-'+type+'-'+curTk.id+'.jpg'}]);
+      saveState();renderPhotos();toastM(type==='before'?'cam_before':'cam_after');
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+function sharePhotos(){
+  var msg='PhoneFix Pro '+(curTk?curTk.id:'')+' photos: '+trackerLink();
+  copyText(msg,'share_photo');
+}
+function sendReviewLinks(){
+  var msg='PhoneFix Pro review link: '+location.origin+location.pathname+'#review';
+  copyText(msg,'review_all');
+}
+function setScanStatus(msg){var el=document.getElementById('scan-status');if(el)el.textContent=msg;}
+function setScanCodePreview(code){var el=document.getElementById('scan-code-preview');if(el)el.textContent='Kod scan: '+(code||'-');}
+function findItemByCode(code){
+  code=String(code||'').trim().toLowerCase();
+  return posItems.find(function(p){
+    return String(p.sku||'').toLowerCase()===code||String(p.id||'').toLowerCase()===code||String(p.nm||'').toLowerCase()===code;
+  });
+}
+function handleScanCode(code){
+  var raw=String(code||'').trim();if(!raw)return;
+  setScanCodePreview(raw);
+  var item=findItemByCode(raw);
+  if(item){
+    stopScanner();
+    goTab('pos');
+    adjCart(item.id,1);
+    toast((lang==='en'?'Added to cart: ':'Masuk cart: ')+(lang==='en'?item.nmEN:item.nm));
+  }else{
+    stopScanner();
+    if(!isAdmin()){toast('Item belum ada dalam database. Minta admin tambah produk dahulu.');return;}
+    goPg('p-add-product');
+    var sku=document.getElementById('pr-sku');if(sku)sku.value=raw;
+    toast((lang==='en'?'SKU not found. Add new product: ':'SKU belum ada. Tambah produk baru: ')+raw);
+  }
+}
+async function startScanner(){
+  var ov=document.getElementById('scan-overlay');if(ov)ov.classList.add('on');
+  var manual=document.getElementById('scan-manual');if(manual)manual.value='';
+  setScanCodePreview('-');
+  setScanStatus('Meminta akses kamera...');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    setScanStatus('Browser ini tidak beri akses kamera. Masukkan SKU/barcode secara manual.');
+    return;
+  }
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});
+    var video=document.getElementById('scan-video');
+    video.srcObject=scanStream;await video.play();
+    var track=scanStream.getVideoTracks()[0];
+    if(track&&track.getCapabilities&&track.applyConstraints){
+      var caps=track.getCapabilities();
+      var advanced={};
+      if(caps.focusMode&&caps.focusMode.includes('continuous'))advanced.focusMode='continuous';
+      if(caps.zoom&&caps.zoom.max)advanced.zoom=Math.min(caps.zoom.max,Math.max(caps.zoom.min||1,1.5));
+      if(Object.keys(advanced).length)track.applyConstraints({advanced:[advanced]}).catch(function(){});
+    }
+    if('BarcodeDetector' in window){
+      scanDetector=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128','code_39','upc_a','upc_e']});
+      setScanStatus('Kamera aktif. Jarakkan sedikit sampai garis barcode tajam. Kod akan auto masuk bila detect.');
+      scanTimer=setInterval(async function(){
+        try{
+          var codes=await scanDetector.detect(video);
+          if(codes&&codes[0])handleScanCode(codes[0].rawValue);
+        }catch(e){}
+      },700);
+    }else{
+      setScanStatus('Kamera aktif, tetapi scanner automatik tidak disokong oleh browser ini. Gunakan input manual di bawah.');
+    }
+  }catch(e){
+    setScanStatus('Kamera tidak dibenarkan. Tekan Allow pada browser atau masukkan SKU secara manual.');
+  }
+}
+function stopScanner(){
+  var ov=document.getElementById('scan-overlay');if(ov)ov.classList.remove('on');
+  if(scanTimer){clearInterval(scanTimer);scanTimer=null;}
+  if(scanStream){scanStream.getTracks().forEach(function(t){t.stop();});scanStream=null;}
+  var video=document.getElementById('scan-video');if(video)video.srcObject=null;
+}
+function submitManualScan(){
+  var code=(document.getElementById('scan-manual')||{}).value||'';
+  handleScanCode(code);
+}
+async function scanImageFile(input){
+  var file=input.files&&input.files[0];if(!file)return;
+  setScanStatus('Membaca barcode dari gambar...');
+  try{
+    if(!('BarcodeDetector' in window))throw new Error('No BarcodeDetector');
+    var bitmap=await createImageBitmap(file);
+    scanDetector=scanDetector||new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128','code_39','upc_a','upc_e']});
+    var codes=await scanDetector.detect(bitmap);
+    if(codes&&codes[0])handleScanCode(codes[0].rawValue);
+    else setScanStatus('Tak dapat detect dari gambar. Cuba crop/ambil gambar lebih jelas atau masukkan nombor barcode manual.');
+  }catch(e){
+    setScanStatus('Browser ini tak support scan dari gambar. Masukkan nombor barcode manual.');
+  }
+  input.value='';
+}
+
+function goPg(id){
+  var adminPages=['p-add-item','p-add-product','p-add-service','p-add-package','p-laporan','p-rpt-tk'];
+  if(adminPages.includes(id)&&!isAdmin()){toast('Bahagian ini untuk admin sahaja.');return;}
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('act');});
+  var el=document.getElementById(id);if(el)el.classList.add('act');
+}
+function goTab(t){
+  document.querySelectorAll('.nt').forEach(function(n){n.classList.remove('on');});
+  var el=document.getElementById('tab-'+t);if(el)el.classList.add('on');
+  var map={ticket:'p-ticket',pos:'p-pos',cust:'p-cust',learn:'p-learn',laporan:(isAdmin()?'p-laporan':'p-staff-report')};
+  if(t==='cust')renderCusts();
+  if(t==='pos'){renderPOS();renderAllItems();renderStock();}
+  if(t==='learn')renderLearn();
+  if(t==='laporan'){if(isAdmin()){renderReviews();renderStaffReports();}else renderStaffReports();}
+  goPg(map[t]);
+}
+function setPill(el,grp){document.querySelectorAll('#'+grp+' .pill').forEach(function(p){p.classList.remove('on');});el.classList.add('on');}
+function setTkF(el,f){document.querySelectorAll('#tk-filter .pill').forEach(function(p){p.classList.remove('on');});el.classList.add('on');tkFilter=f;renderTkList();}
+
+function renderTkList(){
+  var list=document.getElementById('tk-list');if(!list)return;
+  var sn=stNM[lang]||stNM.my;
+  var filt=tickets.filter(function(tk){return tkFilter==='all'||tk.st===tkFilter;});
+  list.innerHTML=filt.map(function(tk){
+    return '<div class="tk" onclick="openTk(\''+tk.id+'\')"><div class="tk-r"><span class="tk-id">#'+tk.id+'</span><span class="bdg '+stB[tk.st]+'">'+sn[tk.st]+'</span></div><div class="tk-m"><div class="dico" style="background:'+tk.avbg+';"><svg style="width:15px;height:15px;stroke:'+tk.avc+';fill:none;stroke-width:1.8;" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg></div><div><div class="tnm">'+tk.dev+' — '+tk.prb+'</div><div class="tsb">'+tk.note+'</div></div></div><div class="tk-b"><div style="display:flex;align-items:center;gap:4px;"><div class="av" style="width:17px;height:17px;font-size:7px;background:'+tk.avbg+';color:'+tk.avc+';">'+tk.av+'</div><span style="font-size:10px;color:var(--color-text-secondary);">'+tk.nm+'</span></div><span style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+tk.pr+'</span></div></div>';
+  }).join('');
+  if(!filt.length)list.innerHTML='<div style="text-align:center;padding:22px 0;font-size:11px;color:var(--color-text-tertiary);">'+(lang==='en'?'No tickets found':'Tiada ticket')+'</div>';
+}
+
+function openTk(id){
+  curTk=tickets.find(function(t){return t.id===id;})||tickets[0];
+  if(!curTk){toast('Tiada ticket lagi. Buka ticket baru dahulu.');goPg('p-ticket');return;}
+  var sn=stNM[lang]||stNM.my;var d=curTk;
+  var av=document.getElementById('d-av');av.textContent=d.av;av.style.background=d.avbg;av.style.color=d.avc;
+  document.getElementById('d-nm').textContent=d.nm;
+  document.getElementById('d-id').textContent='#'+d.id;
+  document.getElementById('d-dev').textContent=d.dev;
+  document.getElementById('d-prb').textContent=d.prb;
+  document.getElementById('d-tch').textContent=d.tc;
+  document.getElementById('d-dep').textContent=d.dp;
+  document.getElementById('d-prc').textContent=d.pr;
+  var bdg=document.getElementById('d-bdg');bdg.className='bdg '+stB[d.st];bdg.textContent=sn[d.st];
+  var idx=stCyc.indexOf(d.st);
+  document.getElementById('d-stlbl').textContent=lang==='en'?'Update Status':'Kemaskini Status';
+  var steps=lang==='en'?['Received','Diagnosed','In Repair','QC & Test','Done & Notify']:['Diterima','Diagnosis','Dalam repair','QC & Test','Siap & Notify'];
+  var done=idx<=0?1:idx<=1?2:idx<=2?3:5;
+  var tl=document.getElementById('d-tl');tl.innerHTML='';
+  steps.forEach(function(s,i){
+    var isDn=i<done;var isAc=i===done&&i<steps.length;var isLast=i===steps.length-1;
+    var dc=isDn?'dn':isAc?'ac':'pd';var lc=isDn?'dn':'pd';
+    var sc=isAc?'color:#7FB800;':isDn?'':'color:var(--color-text-tertiary);';
+    var tt=isDn?(i<2?['9:30','10:15'][i]+(lang==='en'?' am':' pagi'):(lang==='en'?'Done':'Selesai')):isAc?(lang==='en'?'In progress':'Sedang berjalan'):'—';
+    tl.innerHTML+='<div class="tl-it"><div class="tl-col"><div class="tl-dot '+dc+'"></div>'+(isLast?'':'<div class="tl-ln '+lc+'"></div>')+'</div><div style="padding-top:1px;"><div style="font-size:11px;font-weight:500;'+sc+'">'+s+'</div><div style="font-size:9px;color:var(--color-text-tertiary);margin-top:1px;">'+tt+'</div></div></div>';
+  });
+  document.getElementById('qr-lbl').textContent='Ticket #'+d.id;
+  document.getElementById('qr-tk').textContent='#'+d.id;
+  document.getElementById('qr-nm').textContent=d.nm;
+  document.getElementById('qr-st').textContent=sn[d.st];
+  renderPhotos();
+  goPg('p-tk-detail');
+}
+
+function captureTicketEvidence(){
+  var input=document.getElementById('ticket-evidence-file');
+  if(input)input.click();
+}
+function loadTicketEvidence(input){
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    pendingEvidenceRaw=reader.result;
+    pendingEvidenceLabeled='';
+    var img=document.getElementById('ticket-evidence-preview');
+    if(img){img.src=pendingEvidenceRaw;img.classList.add('on');}
+    toast('Gambar bukti dimuat. Label akan dijana masa simpan ticket.');
+  };
+  reader.readAsDataURL(file);
+}
+function clearTicketEvidence(){
+  pendingEvidenceRaw='';pendingEvidenceLabeled='';
+  var input=document.getElementById('ticket-evidence-file');if(input)input.value='';
+  var img=document.getElementById('ticket-evidence-preview');if(img){img.src='';img.classList.remove('on');}
+}
+function captureDepositReceipt(){var input=document.getElementById('deposit-receipt-file');if(input)input.click();}
+function loadDepositReceipt(input){
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    pendingDepositReceiptRaw=reader.result;
+    var img=document.getElementById('deposit-receipt-preview');
+    if(img){img.src=pendingDepositReceiptRaw;img.classList.add('on');}
+    toast('Resit deposit dimuat. Label akan dijana masa simpan ticket.');
+  };
+  reader.readAsDataURL(file);
+}
+function clearDepositReceipt(){
+  pendingDepositReceiptRaw='';
+  var input=document.getElementById('deposit-receipt-file');if(input)input.value='';
+  var img=document.getElementById('deposit-receipt-preview');if(img){img.src='';img.classList.remove('on');}
+}
+function captureFullReceipt(){var input=document.getElementById('full-receipt-file');if(input)input.click();}
+function loadFullReceipt(input){
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    pendingFullReceiptRaw=reader.result;
+    var img=document.getElementById('full-receipt-preview');
+    if(img){img.src=pendingFullReceiptRaw;img.classList.add('on');}
+    toast('Resit full payment dimuat.');
+  };
+  reader.readAsDataURL(file);
+}
+function clearFullReceipt(){
+  pendingFullReceiptRaw='';
+  var input=document.getElementById('full-receipt-file');if(input)input.value='';
+  var img=document.getElementById('full-receipt-preview');if(img){img.src='';img.classList.remove('on');}
+}
+function buildEvidenceMeta(ticket){
+  return {
+    title:ticket.nm,
+    badge:'PhoneFix Pro',
+    subtitle:ticket.dev+' - '+ticket.prb,
+    ticket:ticket.id,
+    name:ticket.nm,
+    device:ticket.dev,
+    issue:ticket.prb,
+    stats:[
+      {value:ticket.id,label:'Ticket'},
+      {value:ticket.dev,label:'Model'},
+      {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
+    ],
+    date:new Date().toLocaleString('ms-MY',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'})
+  };
+}
+function buildDepositMeta(ticket){
+  return {
+    title:ticket.nm,
+    badge:'Deposit',
+    subtitle:'Resit deposit untuk '+ticket.dev+' - '+ticket.prb,
+    stats:[
+      {value:ticket.id,label:'Ticket'},
+      {value:ticket.dp,label:'Deposit'},
+      {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
+    ]
+  };
+}
+function buildFullPaymentMeta(ticket){
+  return {
+    title:ticket.nm,
+    badge:'Paid',
+    subtitle:'Full payment diterima. Job closed sebagai Diambil / Collect.',
+    stats:[
+      {value:ticket.id,label:'Ticket'},
+      {value:ticket.pr,label:'Total'},
+      {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
+    ]
+  };
+}
+function buildPhotoMeta(ticket,type){
+  var isAfter=type==='after';
+  return {
+    title:ticket.nm,
+    badge:isAfter?'After':'Before',
+    subtitle:(isAfter?'Gambar selepas repair: ':'Gambar sebelum repair: ')+ticket.dev+' - '+ticket.prb,
+    stats:[
+      {value:ticket.id,label:'Ticket'},
+      {value:isAfter?'After':'Before',label:'Foto'},
+      {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
+    ]
+  };
+}
+function generateEvidenceImage(src,meta){
+  return new Promise(function(resolve){
+    if(!src){resolve('');return;}
+    var img=new Image();
+    img.onload=function(){
+      var maxW=1200;
+      var scale=Math.min(1,maxW/img.width);
+      var w=Math.round(img.width*scale);
+      var h=Math.round(img.height*scale);
+      var labelH=Math.max(260,Math.round(w*0.26));
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h+labelH;
+      var ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0,w,h);
+      var pad=Math.max(24,Math.round(w*0.035));
+      var top=h+Math.max(24,Math.round(labelH*0.12));
+      ctx.fillStyle='#fff';ctx.fillRect(0,h,w,labelH);
+      ctx.fillStyle='rgba(0,0,0,.08)';ctx.fillRect(0,h,w,1);
+      ctx.fillStyle='#1a1a18';ctx.font='800 '+Math.max(26,Math.round(w*0.042))+'px Arial, sans-serif';
+      var title=meta.title||meta.name||'PhoneFix Pro';
+      ctx.fillText(title,pad,top+Math.round(labelH*0.13));
+      var titleW=ctx.measureText(title).width;
+      var badgeX=pad+titleW+Math.max(10,Math.round(w*0.012));
+      var badgeR=Math.max(14,Math.round(w*0.018));
+      ctx.fillStyle='#1296F6';ctx.beginPath();ctx.arc(badgeX+badgeR,top+Math.round(labelH*0.09),badgeR,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(3,Math.round(w*0.004));ctx.beginPath();ctx.moveTo(badgeX+badgeR*0.55,top+Math.round(labelH*0.09));ctx.lineTo(badgeX+badgeR*0.9,top+Math.round(labelH*0.09)+badgeR*0.35);ctx.lineTo(badgeX+badgeR*1.5,top+Math.round(labelH*0.09)-badgeR*0.45);ctx.stroke();
+      ctx.fillStyle='#333';ctx.font='500 '+Math.max(18,Math.round(w*0.027))+'px Arial, sans-serif';
+      wrapCanvasText(ctx,meta.subtitle||'',pad,top+Math.round(labelH*0.28),w-pad*2,Math.max(24,Math.round(w*0.035)),2);
+      var stats=meta.stats||[];
+      var statY=h+Math.round(labelH*0.72);
+      var colW=(w-pad*2)/Math.max(1,stats.length||3);
+      stats.forEach(function(s,i){
+        var cx=pad+colW*i+colW/2;
+        if(i>0){ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(pad+colW*i,statY-Math.round(labelH*0.16),2,Math.round(labelH*0.28));}
+        ctx.fillStyle='#1a1a18';ctx.font='800 '+Math.max(22,Math.round(w*0.034))+'px Arial, sans-serif';ctx.textAlign='center';
+        ctx.fillText(String(s.value||'-'),cx,statY);
+        ctx.fillStyle='#555';ctx.font='500 '+Math.max(15,Math.round(w*0.023))+'px Arial, sans-serif';
+        ctx.fillText(String(s.label||''),cx,statY+Math.max(24,Math.round(w*0.034)));
+        ctx.textAlign='left';
+      });
+      resolve(canvas.toDataURL('image/jpeg',0.88));
+    };
+    img.onerror=function(){resolve(src);};
+    img.src=src;
+  });
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines){
+  var words=String(text||'').split(' ');var line='';var lines=0;
+  for(var n=0;n<words.length;n++){
+    var test=line+words[n]+' ';
+    if(ctx.measureText(test).width>maxWidth&&n>0){
+      ctx.fillText(line.trim(),x,y);line=words[n]+' ';y+=lineHeight;lines++;
+      if(maxLines&&lines>=maxLines-1)break;
+    }else line=test;
+  }
+  if(line)ctx.fillText(line.trim(),x,y);
+}
+function dataUrlToFile(dataUrl,name){
+  var parts=dataUrl.split(',');
+  var mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/jpeg';
+  var bin=atob(parts[1]);var arr=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+  return new File([arr],name,{type:mime});
+}
+function downloadDataUrl(dataUrl,name){
+  if(!dataUrl)return;
+  var a=document.createElement('a');
+  a.href=dataUrl;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+}
+function queueImageDownloads(files){
+  var list=(files||[]).filter(function(f){return f&&f.data;});
+  if(list.length>1)toast('Memuat turun '+list.length+' gambar bukti satu-satu...');
+  list.forEach(function(f,i){
+    setTimeout(function(){downloadDataUrl(f.data,f.name);},i*650);
+  });
+}
+function downloadEvidenceImage(ticket){
+  if(!ticket||!ticket.evidence||!ticket.evidence.labeled){toast('Tiada gambar bukti.');return;}
+  downloadDataUrl(ticket.evidence.labeled,'PhoneFix-Pro-Evidence-'+ticket.id+'.jpg');
+}
+async function shareEvidenceImage(ticket){
+  if(!ticket||!ticket.evidence||!ticket.evidence.labeled)return false;
+  try{
+    var file=dataUrlToFile(ticket.evidence.labeled,'PhoneFix-Pro-Evidence-'+ticket.id+'.jpg');
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'PhoneFix Pro Evidence',text:'Bukti gambar '+ticket.id});
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+function cycleStatus(){
+  var idx=stCyc.indexOf(curTk.st);curTk.st=stCyc[(idx+1)%4];
+  var tk=tickets.find(function(t){return t.id===curTk.id;});if(tk)tk.st=curTk.st;
+  openTk(curTk.id);
+  toast((MSG[lang]||MSG.my).status_up+(stNM[lang]||stNM.my)[curTk.st]);
+  renderTkList();updateMetrics();saveState();
+}
+function openStatusModal(){
+  if(!curTk){toast('Pilih ticket dahulu.');return;}
+  var sel=document.getElementById('status-select');if(sel)sel.value=curTk.st||'new';
+  clearFullReceipt();
+  var pass=document.getElementById('status-pass');if(pass)pass.value='';
+  toggleStatusReceipt();
+  var ov=document.getElementById('status-overlay');if(ov)ov.classList.add('on');
+}
+function closeStatusModal(){
+  var ov=document.getElementById('status-overlay');if(ov)ov.classList.remove('on');
+  clearFullReceipt();
+}
+function toggleStatusReceipt(){
+  var sel=document.getElementById('status-select');
+  var box=document.getElementById('collect-receipt-box');
+  if(box)box.style.display=(sel&&sel.value==='del')?'block':'none';
+}
+async function confirmStatusUpdate(){
+  if(!curTk){toast('Pilih ticket dahulu.');return;}
+  var sel=document.getElementById('status-select');var next=(sel&&sel.value)||curTk.st;
+  var sn=stNM[lang]||stNM.my;
+  if(next==='del'){
+    if(!pendingFullReceiptRaw){toast('Masukkan resit full payment dahulu.');return;}
+    if(!currentUser){showLogin();toast('Login dahulu untuk close job.');return;}
+    var pass=(document.getElementById('status-pass')||{}).value||'';
+    var user=USERS[currentUser.username];
+    if(!user||user.pin!==pass){toast('Password salah. Job belum ditutup.');return;}
+    var labeled=await generateEvidenceImage(pendingFullReceiptRaw,buildFullPaymentMeta(curTk));
+    curTk.receipts=curTk.receipts||{};
+    curTk.receipts.fullPayment={raw:pendingFullReceiptRaw,labeled:labeled,total:curTk.pr,createdAt:new Date().toISOString(),confirmedBy:currentUser.username};
+    photos[curTk.id]=photos[curTk.id]||{};
+    photos[curTk.id].fullPayment=labeled||pendingFullReceiptRaw;
+    queueImageDownloads([{data:labeled||pendingFullReceiptRaw,name:'PhoneFix-Pro-Full-Payment-'+curTk.id+'.jpg'}]);
+  }
+  curTk.st=next;
+  var tk=tickets.find(function(t){return t.id===curTk.id;});if(tk){Object.assign(tk,curTk);}
+  closeStatusModal();
+  openTk(curTk.id);
+  toast((MSG[lang]||MSG.my).status_up+sn[curTk.st]);
+  renderTkList();renderPhotos();updateMetrics();saveState();
+}
+
+async function saveTk(){
+  var nm=document.getElementById('f-nm').value.trim();if(!nm){toastM('fill_name');return;}
+  var init=nm.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+  var price=Number(document.getElementById('f-pr').value||0);
+  var deposit=Number(document.getElementById('f-dp').value||0);
+  if(deposit>0&&!pendingDepositReceiptRaw){toast('Masukkan gambar resit deposit dahulu.');return;}
+  var ph=document.getElementById('f-ph').value.trim();
+  var tk={id:'TK-0'+nextId++,dev:(document.getElementById('f-mod').value||document.getElementById('f-dev').value),prb:document.getElementById('f-prb').value,note:document.getElementById('f-nt').value||'—',nm:nm,ph:ph,av:init,avbg:'#ECFFD1',avc:'#1A1A18',tc:document.getElementById('f-tc').value,pr:'RM '+price,dp:'RM '+deposit,st:'new',cost:Math.round(price*0.5),warrantyDays:Number(document.getElementById('f-war').value||30)};
+  var downloads=[];
+  if(pendingEvidenceRaw){
+    var labeled=await generateEvidenceImage(pendingEvidenceRaw,buildEvidenceMeta(tk));
+    tk.evidence={raw:pendingEvidenceRaw,labeled:labeled,createdAt:new Date().toISOString()};
+    photos[tk.id]=photos[tk.id]||{};
+    photos[tk.id].before=labeled||pendingEvidenceRaw;
+    downloads.push({data:labeled||pendingEvidenceRaw,name:'PhoneFix-Pro-Evidence-'+tk.id+'.jpg'});
+  }
+  if(pendingDepositReceiptRaw){
+    var depLabeled=await generateEvidenceImage(pendingDepositReceiptRaw,buildDepositMeta(tk));
+    tk.receipts=tk.receipts||{};
+    tk.receipts.deposit={raw:pendingDepositReceiptRaw,labeled:depLabeled,amount:deposit,createdAt:new Date().toISOString()};
+    photos[tk.id]=photos[tk.id]||{};
+    photos[tk.id].deposit=depLabeled||pendingDepositReceiptRaw;
+    downloads.push({data:depLabeled||pendingDepositReceiptRaw,name:'PhoneFix-Pro-Deposit-'+tk.id+'.jpg'});
+  }
+  tickets.unshift(tk);curTk=tk;updateCustomerFromTicket(tk,ph);
+  toastM('save_tk');
+  ['f-nm','f-ph','f-mod','f-nt','f-pr','f-dp','f-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  clearTicketEvidence();clearDepositReceipt();
+  renderTkList();renderCusts();updateMetrics();saveState();queueImageDownloads(downloads);goPg('p-ticket');sendNewTicketWhatsApp(tk);
+}
+
+function claimWarranty(ticketId){
+  if(!curCust){toast('Pilih customer dahulu.');return;}
+  var source=tickets.find(function(t){return t.id===ticketId;})||null;
+  var warranty=(curCust.warranties||[]).find(function(w){return w.ticket===ticketId;})||null;
+  if(warranty&&warrantyDaysLeft(warranty)<=0){toast('Warranty sudah expired.');return;}
+  var device=(source&&source.dev)||(warranty&&String(warranty.item||'').split(' - ')[0])||curCust.last||'Peranti';
+  var issue=(source&&source.prb)||'Warranty';
+  var init=curCust.nm.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+  var tk={
+    id:'TK-0'+nextId++,
+    dev:device,
+    prb:'Warranty Claim - '+issue,
+    note:'Claim warranty dari '+(ticketId||'ticket asal')+'. Semak semula kerosakan, gambar bukti, dan kelulusan admin.',
+    nm:curCust.nm,
+    ph:curCust.ph||'',
+    av:init,
+    avbg:'#E1F5EE',
+    avc:'#085041',
+    tc:'Belum assign',
+    pr:'RM 0',
+    dp:'RM 0',
+    st:'new',
+    cost:0,
+    warrantyDays:0,
+    claim:{type:'warranty',originalTicket:ticketId||'',status:'pending',createdAt:new Date().toISOString()}
+  };
+  tickets.unshift(tk);
+  curTk=tk;
+  curCust.hist=curCust.hist||[];
+  curCust.hist.unshift(tk.id+': Warranty Claim dari '+(ticketId||'ticket asal')+' — RM 0');
+  curCust.last=tk.dev;
+  renderTkList();renderCusts();updateMetrics();saveState();
+  toast('Ticket claim warranty dibuka.');
+  openTk(tk.id);
+}
+
+function genQR(){var g=document.getElementById('qr-grid');if(!g)return;g.innerHTML='';for(var i=0;i<25;i++){var d=document.createElement('div');d.style.cssText='aspect-ratio:1;border-radius:1px;background:'+(Math.random()>.45?'var(--color-text-primary)':'var(--color-background-primary)')+';';g.appendChild(d);}}
+
+function renderPOS(){
+  var filt=posItems.filter(function(p){return curPCat==='all'||p.cat===curPCat;});
+  var posList=document.getElementById('pos-list');if(!posList)return;
+  posList.innerHTML=filt.map(function(p){
+    var nm=lang==='en'?p.nmEN:p.nm;var q=cart[p.id]||0;
+    var profit=(p.pr||0)-(p.cost||0);
+    var meta='SKU '+cleanTxt(p.sku||p.id)+stockMetaForItem(p)+' · Warranty '+(p.warrantyDays||0)+' hari';
+    if(isAdmin())meta='SKU '+cleanTxt(p.sku||p.id)+stockMetaForItem(p)+' · Kos RM '+(p.cost||0)+' · Untung RM '+profit+' · Warranty '+(p.warrantyDays||0)+' hari';
+    return '<div class="pos-row"><div class="item-main"><div class="item-ico">'+cleanTxt(p.icon||'📦')+'</div><div><div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+cleanTxt(nm)+'</div><div style="font-size:10px;color:var(--color-text-secondary);">RM '+p.pr+'</div><div class="item-meta">'+meta+'</div></div></div><div class="qty-c"><button class="qb" onclick="adjCart(\''+p.id+'\',-1)">−</button><span class="qn" id="q-'+p.id+'">'+q+'</span><button class="qb" onclick="adjCart(\''+p.id+'\',1)">+</button></div></div>';
+  }).join('');
+  if(!filt.length)posList.innerHTML='<div style="text-align:center;padding:18px 0;font-size:11px;color:var(--color-text-tertiary);">'+(lang==='en'?'No POS items yet. Admin can add products/services.':'Belum ada item POS. Admin boleh tambah produk/servis.')+'</div>';
+  updateCart();
+}
+
+function setPCat(el,c){document.querySelectorAll('#pos-cat .pill').forEach(function(p){p.classList.remove('on');});el.classList.add('on');curPCat=c;renderPOS();}
+function adjCart(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<0)cart[id]=0;var el=document.getElementById('q-'+id);if(el)el.textContent=cart[id];updateCart();}
+function updateCart(){
+  var total=0;var rows='';
+  posItems.forEach(function(p){if(cart[p.id]&&cart[p.id]>0){total+=cart[p.id]*p.pr;var nm=lang==='en'?p.nmEN:p.nm;rows+='<div class="dr"><span class="dl">'+cleanTxt(nm)+' x'+cart[p.id]+'</span><span class="dv">RM '+(cart[p.id]*p.pr)+'</span></div>';}});
+  var ci=document.getElementById('cart-items');if(ci)ci.innerHTML=rows||('<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">'+(lang==='en'?'No items yet':'Belum ada item')+'</div>');
+  var ct=document.getElementById('cart-total');if(ct)ct.textContent='RM '+total;
+}
+function buildCheckoutSummary(){
+  var total=0;var items=[];var cost=0;var low=[];
+  posItems.forEach(function(p){
+    var qty=cart[p.id]||0;if(!qty)return;
+    var stock=findStockForItem(p);
+    if(stock&&qty>Number(stock.qty||0))low.push(p.nm+' stok '+(stock.qty||0));
+    total+=qty*p.pr;cost+=qty*(p.cost||0);
+    items.push({id:p.id,nm:p.nm,qty:qty,pr:p.pr,cost:p.cost||0,warrantyDays:p.warrantyDays||0,sku:p.sku||p.id});
+  });
+  return {items:items,total:total,cost:cost,profit:total-cost,low:low};
+}
+function renderPaymentQR(){
+  var qr=document.getElementById('pay-qr');if(!qr)return;
+  normalizePaymentSettings();
+  if(paymentSettings.qrImage){qr.innerHTML='<img src="'+paymentSettings.qrImage+'" alt="QR bank">';return;}
+  var html='';for(var i=1;i<=81;i++)html+='<span></span>';
+  qr.innerHTML=html;
+}
+function openPaymentModal(summary){
+  pendingCheckout=summary;
+  normalizePaymentSettings();
+  document.getElementById('pay-type').textContent=paymentSettings.type;
+  document.getElementById('pay-bank-name').textContent=paymentSettings.bank;
+  document.getElementById('pay-bank-acc').textContent=paymentSettings.account;
+  document.getElementById('pay-bank-holder').textContent=paymentSettings.holder;
+  document.getElementById('pay-qr-label').textContent=paymentSettings.qrLabel;
+  document.getElementById('pay-items').innerHTML=summary.items.map(function(it){return '<div class="dr"><span class="dl">'+cleanTxt(it.nm)+'<br><span class="item-meta">SKU '+cleanTxt(it.sku)+' · Qty '+it.qty+' x RM '+it.pr+'</span></span><span class="dv">RM '+(it.qty*it.pr)+'</span></div>';}).join('');
+  document.getElementById('pay-total').textContent='RM '+summary.total;
+  var pass=document.getElementById('pay-pass');if(pass)pass.value='';
+  renderPaymentQR();
+  var ov=document.getElementById('pay-overlay');if(ov)ov.classList.add('on');
+  setTimeout(function(){var p=document.getElementById('pay-pass');if(p)p.focus();},80);
+}
+function closePaymentModal(){
+  var ov=document.getElementById('pay-overlay');if(ov)ov.classList.remove('on');
+  pendingCheckout=null;
+}
+function confirmPayment(){
+  if(!pendingCheckout){toast('Tiada payment pending.');return;}
+  if(!currentUser){showLogin();toast('Login dahulu untuk confirm payment.');return;}
+  var pass=(document.getElementById('pay-pass')||{}).value||'';
+  var user=USERS[currentUser.username];
+  if(!user||user.pin!==pass){toast('Password salah. Payment belum disahkan.');return;}
+  var receiptId='RC-'+String(sales.length+1).padStart(4,'0');
+  reduceStockForCart();
+  normalizePaymentSettings();
+  sales.unshift({id:receiptId,date:new Date().toISOString(),items:pendingCheckout.items,total:pendingCheckout.total,cost:pendingCheckout.cost,profit:pendingCheckout.profit,payment:{method:paymentSettings.type,bank:paymentSettings.bank,account:paymentSettings.account,holder:paymentSettings.holder,qrLabel:paymentSettings.qrLabel,confirmedBy:currentUser.username,confirmedAt:new Date().toISOString()}});
+  cart={};pendingCheckout=null;
+  var ov=document.getElementById('pay-overlay');if(ov)ov.classList.remove('on');
+  renderPOS();renderStock();updateMetrics();saveState();
+  toast('Payment success. Resit '+receiptId+' disimpan.');
+}
+function checkout(){
+  var summary=buildCheckoutSummary();
+  if(!summary.total){toastM('empty_cart');return;}
+  if(summary.low.length){toast('Stok tak cukup: '+summary.low.join(', '));return;}
+  openPaymentModal(summary);
+}
+
+function renderAllItems(){
+  var el=document.getElementById('all-items-list');if(!el)return;
+  el.innerHTML=posItems.map(function(p){
+    var nm=lang==='en'?p.nmEN:p.nm;var profit=(p.pr||0)-(p.cost||0);
+    var meta='SKU '+cleanTxt(p.sku||p.id)+stockMetaForItem(p)+' · Warranty '+(p.warrantyDays||0)+' hari';
+    if(isAdmin())meta='SKU '+cleanTxt(p.sku||p.id)+stockMetaForItem(p)+' · Kos RM '+(p.cost||0)+' · Warranty '+(p.warrantyDays||0)+' hari';
+    var stockBtns='';
+    if(isAdmin()&&stockQtyForItem(p)!==null)stockBtns='<div style="display:flex;gap:4px;margin-top:6px;"><button class="qb" onclick="event.stopPropagation();adjustItemStock(&quot;'+p.id+'&quot;,-1)">−</button><button class="qb" onclick="event.stopPropagation();adjustItemStock(&quot;'+p.id+'&quot;,1)">+</button><button class="sbtn2" onclick="event.stopPropagation();editItem(&quot;'+p.id+'&quot;)" style="margin:0;padding:5px 9px;width:auto;font-size:10px;">Edit</button></div>';
+    return '<div class="dr" onclick="editItem(&quot;'+p.id+'&quot;)" style="cursor:pointer;align-items:flex-start;"><span class="dl">'+cleanTxt(p.icon||'📦')+' '+cleanTxt(nm)+'<br><span class="item-meta">'+meta+'</span>'+stockBtns+'</span><span class="dv '+(profit>0?'profit-good':'profit-warn')+'">RM '+p.pr+(isAdmin()?'<br><span class="item-meta">+RM '+profit+'</span>':'')+'</span></div>';
+  }).join('');
+  if(!posItems.length)el.innerHTML='<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Belum ada product, service atau pakej.</div>';
+}
+
+function renderStock(){
+  var low=stocks.filter(function(s){return s.qty<=s.min;});
+  var al=document.getElementById('stock-alerts');
+  if(al)al.innerHTML=low.map(function(s){var nm=lang==='en'?s.nmEN:s.nm;var isl=s.qty<=1;var msg=lang==='en'?nm+' — only '+s.qty+' left!':nm+' — tinggal '+s.qty+' unit!';return '<div class="alert-box '+(isl?'alert-red':'alert-amb')+'"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>'+msg+'</span></div>';}).join('');
+  var pal=document.getElementById('pos-stock-alerts');
+  var pc=document.getElementById('pos-stock-card');
+  if(pal)pal.innerHTML=low.map(function(s){var nm=lang==='en'?s.nmEN:s.nm;var isl=s.qty<=1;var msg=lang==='en'?nm+' — only '+s.qty+' left!':nm+' — tinggal '+s.qty+' unit!';return '<div class="alert-box '+(isl?'alert-red':'alert-amb')+'"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>'+msg+'</span></div>';}).join('');
+  if(pc)pc.style.display=low.length&&isAdmin()?'block':'none';
+  var list=document.getElementById('stk-list');if(!list)return;
+  var filt=stocks.filter(function(s){if(stkFilter==='all')return true;if(stkFilter==='low')return s.qty<=s.min;if(stkFilter==='ok')return s.qty>s.min;if(stkFilter==='part')return s.cat==='part';if(stkFilter==='acc')return s.cat==='acc';return true;});
+  list.innerHTML=filt.map(function(s){
+    var nm=lang==='en'?s.nmEN:s.nm;
+    var col=s.qty<=s.min?'#A32D2D':s.qty<=s.min*2?'#854F0B':'#3B6D11';
+    var catLbl=lang==='en'?(s.cat==='part'?'Spare Part':'Accessory'):(s.cat==='part'?'Spare Part':'Aksesori');
+    var profit=(s.sell||0)-(s.cost||0);
+    var meta=catLbl+' · Harga RM '+(s.sell||0);
+    if(isAdmin())meta=catLbl+' · Harga RM '+(s.sell||0)+' · Kos RM '+(s.cost||0)+' · Untung RM '+profit;
+    return '<div class="stk-row"><div class="item-main"><div class="item-ico">'+cleanTxt(s.icon||'📦')+'</div><div><div class="stk-nm">'+cleanTxt(nm)+'</div><div class="stk-sb">'+meta+'</div><div class="item-meta">Warranty '+(s.warrantyDays||0)+' hari</div></div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:500;color:'+col+';">'+s.qty+'</div><div style="font-size:9px;color:var(--color-text-tertiary);">'+(lang==='en'?'units':'unit')+'</div></div></div>';
+  }).join('');
+  if(!filt.length)list.innerHTML='<div style="text-align:center;padding:18px 0;font-size:11px;color:var(--color-text-tertiary);">'+(lang==='en'?'No stock items yet.':'Belum ada stok lagi.')+'</div>';
+}
+function setStkF(el,f){document.querySelectorAll('#stk-filter .pill').forEach(function(p){p.classList.remove('on');});el.classList.add('on');stkFilter=f;renderStock();}
+
+function renderCusts(){
+  var q=(document.getElementById('cust-srch')||{}).value||'';q=q.toLowerCase();
+  var filt=custs.filter(function(c){return !q||c.nm.toLowerCase().includes(q)||c.ph.includes(q);});
+  var el=document.getElementById('cust-list');if(!el)return;
+  el.innerHTML=filt.map(function(c){
+    var init=c.nm.split(' ').map(function(w){return w[0];}).join('').substring(0,2);
+    var vl=lang==='en'?'visits':'kunjungan';
+    return '<div class="cust-card" onclick="openCust(\''+c.nm+'\')"><div style="display:flex;align-items:center;gap:8px;"><div class="av" style="width:34px;height:34px;font-size:11px;background:#ECFFD1;color:#1A1A18;">'+init+'</div><div style="flex:1;"><div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+c.nm+'</div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px;">'+c.ph+'</div></div><div style="text-align:right;"><div style="font-size:10px;color:var(--color-text-tertiary);">'+c.v+'x '+vl+'</div><div style="font-size:10px;color:var(--color-text-secondary);">'+c.last+'</div></div></div></div>';
+  }).join('');
+  if(!filt.length)el.innerHTML='<div style="text-align:center;padding:18px 0;font-size:11px;color:var(--color-text-tertiary);">'+(lang==='en'?'No customers yet.':'Belum ada customer lagi.')+'</div>';
+}
+
+function openCust(nm){
+  curCust=custs.find(function(c){return c.nm===nm;})||custs[0];var c=curCust;
+  if(!c){toast('Tiada customer lagi.');goPg('p-cust');return;}
+  var init=c.nm.split(' ').map(function(w){return w[0];}).join('').substring(0,2);
+  document.getElementById('cd-av').textContent=init;
+  document.getElementById('cd-nm').textContent=c.nm;
+  document.getElementById('cd-ph').textContent=c.ph;
+  document.getElementById('cd-v').textContent=c.v+(lang==='en'?' visits':' kunjungan');
+  document.getElementById('cd-spend').textContent=c.spend;
+  document.getElementById('cd-last').textContent=c.last;
+  document.getElementById('cd-since').textContent=c.since;
+  document.getElementById('cd-hist').innerHTML=c.hist.map(function(h){return '<div class="dr"><span class="dl" style="font-size:10px;">'+h+'</span></div>';}).join('');
+  var war=document.getElementById('cd-war');
+  if(war){
+    var list=(c.warranties||[]).map(function(w){
+      var left=warrantyDaysLeft(w);var cls=left>7?'profit-good':left>0?'profit-warn':'';
+      var label=left>0?(left+' hari lagi'):'Expired';
+      var btn=left>0?'<button class="sbtn2" onclick="claimWarranty(&quot;'+cleanTxt(w.ticket||'')+'&quot;)" style="margin-top:5px;">Claim Warranty</button>':'';
+      return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:6px 0;"><div class="dr" style="border:none;padding:0;"><span class="dl">'+cleanTxt(w.item||'Warranty')+'<br><span class="item-meta">'+cleanTxt(w.ticket||'')+' · '+(w.days||0)+' hari warranty</span></span><span class="dv '+cls+'">'+label+'</span></div>'+btn+'</div>';
+    }).join('');
+    war.innerHTML=list||'<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Tiada warranty aktif</div>';
+  }
+  goPg('p-cust-detail');
+}
+
+function aiEst(){
+  var b=document.getElementById('ai-brand').value;var p=document.getElementById('ai-prob').value;
+  if(!b||!p){document.getElementById('ai-result').style.display='none';return;}
+  var base={iPhone:{skrin:280,bateri:130,charge:90,speaker:70,water:350,kamera:200}};
+  var pm={'Skrin pecah':'skrin','Bateri drain':'bateri','Tak boleh charge':'charge','Speaker rosak':'speaker','Water damage':'water','Kamera rosak':'kamera'};
+  var mult={iPhone:1,Samsung:.9,Xiaomi:.65,OPPO:.7,Vivo:.68};
+  var est=Math.round((base.iPhone[pm[p]]||150)*(mult[b]||.8));
+  var times={'Skrin pecah':lang==='en'?'1–2 hours':'1–2 jam','Bateri drain':'30–45 min','Tak boleh charge':'45–60 min','Speaker rosak':'30–45 min','Water damage':lang==='en'?'2–4 hours':'2–4 jam','Kamera rosak':lang==='en'?'1–2 hours':'1–2 jam'};
+  var parts={'Skrin pecah':'LCD / OLED panel','Bateri drain':lang==='en'?'OEM Battery':'Bateri OEM','Tak boleh charge':'Charging port','Speaker rosak':'Speaker module','Water damage':lang==='en'?'Cleaning kit + parts':'Cleaning kit + part','Kamera rosak':'Camera module'};
+  var notes={'Skrin pecah':lang==='en'?'Price varies by model. Original parts last longer.':'Harga bergantung model. Part original lebih tahan lama.','Bateri drain':lang==='en'?'Recommend OEM battery. Avoid cheap alternatives.':'Cadang bateri OEM. Elak bateri murah — boleh kembung.','Water damage':lang==='en'?'Price depends on damage level after diagnosis.':'Harga depend pada tahap kerosakan selepas diagnosis.'};
+  document.getElementById('ai-price').textContent='RM '+est+' – RM '+(est+40);
+  document.getElementById('ai-time').textContent=times[p]||'1–2 '+(lang==='en'?'hours':'jam');
+  document.getElementById('ai-part').textContent=parts[p]||'—';
+  var nb=document.getElementById('ai-note');
+  if(notes[p]){nb.innerHTML='<div class="ai-t">'+(lang==='en'?'AI Note':'Nota AI')+'</div><div class="ai-c">'+notes[p]+'</div>';nb.style.display='block';}else{nb.style.display='none';}
+  document.getElementById('ai-result').style.display='block';
+}
+
+function addFeat(){var fl=document.getElementById('feat-list');var row=document.createElement('div');row.className='feat-row';row.innerHTML='<input type="text" placeholder="'+(lang==='en'?'Add item...':'Tambah item...')+'"><button class="rm-btn" onclick="this.closest(\'.feat-row\').remove()">✕</button>';fl.appendChild(row);row.querySelector('input').focus();}
+
+function resetItemEditLabels(){
+  var prod=document.getElementById('lbl-new-prod');if(prod)prod.textContent='Produk Baru';
+  var svc=document.getElementById('lbl-new-svc');if(svc)svc.textContent='Servis Baru';
+  var pkg=document.getElementById('lbl-new-pkg');if(pkg)pkg.textContent='Pakej Baru';
+  var saveProdBtn=document.getElementById('lbl-save-prod');if(saveProdBtn)saveProdBtn.textContent='Simpan Produk';
+  var saveSvcBtn=document.getElementById('lbl-save-svc');if(saveSvcBtn)saveSvcBtn.textContent='Simpan Servis';
+  var savePkgBtn=document.getElementById('lbl-save-pkg');if(savePkgBtn)savePkgBtn.textContent='Simpan Pakej';
+}
+function newProductForm(){
+  if(!requireAdmin())return;
+  editingItemId='';resetItemEditLabels();
+  ['pr-nm','pr-price','pr-cost','pr-qty','pr-min','pr-brand','pr-sku','pr-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  goPg('p-add-product');
+}
+function newServiceForm(){
+  if(!requireAdmin())return;
+  editingItemId='';resetItemEditLabels();
+  ['sv-nm','sv-price','sv-part','sv-cost'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  goPg('p-add-service');
+}
+function newPackageForm(){
+  if(!requireAdmin())return;
+  editingItemId='';resetItemEditLabels();
+  ['pk-nm','pk-tag','pk-price','pk-orig','pk-terms','pk-cost','pk-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  goPg('p-add-package');
+}
+function adjustItemStock(id,delta){
+  if(!requireAdmin())return;
+  var item=posItems.find(function(p){return p.id===id;});var stock=findStockForItem(item);
+  if(!stock){toast('Item ini tiada stok fizikal.');return;}
+  stock.qty=Math.max(0,Number(stock.qty||0)+delta);
+  renderPOS();renderAllItems();renderStock();saveState();
+  toast('Stok '+item.nm+': '+stock.qty);
+}
+function editItem(id){
+  if(!requireAdmin())return;
+  var item=posItems.find(function(p){return p.id===id;});if(!item)return;
+  editingItemId=id;resetItemEditLabels();
+  if(item.cat==='service'){
+    document.getElementById('lbl-new-svc').textContent='Edit Servis';
+    document.getElementById('lbl-save-svc').textContent='Update Servis';
+    document.getElementById('sv-nm').value=item.nm||'';
+    document.getElementById('sv-price').value=item.pr||0;
+    document.getElementById('sv-cost').value=item.cost||0;
+    document.getElementById('sv-war').value=item.warrantyDays?((item.warrantyDays||0)+' hari'):'Tiada';
+    document.getElementById('sv-icon').value=item.icon||'🧰';
+    goPg('p-add-service');return;
+  }
+  if(item.cat==='pkg'){
+    document.getElementById('lbl-new-pkg').textContent='Edit Pakej';
+    document.getElementById('lbl-save-pkg').textContent='Update Pakej';
+    document.getElementById('pk-nm').value=item.nm||'';
+    document.getElementById('pk-price').value=item.pr||0;
+    document.getElementById('pk-cost').value=item.cost||0;
+    document.getElementById('pk-war').value=item.warrantyDays||30;
+    document.getElementById('pk-icon').value=item.icon||'🎁';
+    goPg('p-add-package');return;
+  }
+  var stock=findStockForItem(item);
+  document.getElementById('lbl-new-prod').textContent='Edit Produk';
+  document.getElementById('lbl-save-prod').textContent='Update Produk';
+  document.getElementById('pr-nm').value=item.nm||'';
+  document.getElementById('pr-cat').value=item.cat||'case';
+  document.getElementById('pr-price').value=item.pr||0;
+  document.getElementById('pr-cost').value=item.cost||0;
+  document.getElementById('pr-qty').value=stock?Number(stock.qty||0):0;
+  document.getElementById('pr-min').value=stock?Number(stock.min||0):5;
+  document.getElementById('pr-brand').value=(stock&&stock.brand)||'';
+  document.getElementById('pr-sku').value=item.sku||item.id;
+  document.getElementById('pr-war').value=item.warrantyDays||7;
+  document.getElementById('pr-icon').value=item.icon||'📦';
+  goPg('p-add-product');
+}
+
+function saveProd(){
+  if(!requireAdmin())return;
+  var nm=document.getElementById('pr-nm').value.trim();if(!nm){toastM('fill_name');return;}
+  var pr=parseFloat(document.getElementById('pr-price').value)||0;
+  var cat=document.getElementById('pr-cat').value;
+  var catKey=cat==='screen'?'screen':cat==='cable'?'cable':cat==='audio'?'audio':'case';
+  var cost=Number(document.getElementById('pr-cost').value||0);
+  var war=Number(document.getElementById('pr-war').value||7);
+  var icon=document.getElementById('pr-icon').value||'📦';
+  var sku=(document.getElementById('pr-sku').value||('SKU-'+Date.now())).trim();
+  var existing=editingItemId&&posItems.find(function(p){return p.id===editingItemId;});
+  if(existing){
+    var stock=findStockForItem(existing);
+    existing.sku=sku;existing.nm=nm;existing.nmEN=nm;existing.pr=pr;existing.cost=cost;existing.warrantyDays=war;existing.icon=icon;existing.cat=catKey;
+    if(!stock){stock={nm:nm,nmEN:nm,sku:sku,cat:'acc'};stocks.push(stock);}
+    stock.nm=nm;stock.nmEN=nm;stock.sku=sku;stock.qty=parseInt(document.getElementById('pr-qty').value)||0;stock.min=parseInt(document.getElementById('pr-min').value)||5;stock.sell=pr;stock.cost=cost;stock.warrantyDays=war;stock.icon=icon;
+    toast('Produk dikemaskini.');
+  }else{
+    posItems.push({id:'px'+Date.now(),sku:sku,nm:nm,nmEN:nm,pr:pr,cost:cost,warrantyDays:war,icon:icon,cat:catKey});
+    stocks.push({nm:nm,nmEN:nm,sku:sku,cat:'acc',qty:parseInt(document.getElementById('pr-qty').value)||0,min:parseInt(document.getElementById('pr-min').value)||5,sell:pr,cost:cost,warrantyDays:war,icon:icon});
+    toastM('save_prod');
+  }
+  editingItemId='';resetItemEditLabels();['pr-nm','pr-price','pr-cost','pr-qty','pr-min','pr-brand','pr-sku','pr-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderPOS();renderAllItems();renderStock();saveState();goPg('p-pos');
+}
+
+function saveSvc(){
+  if(!requireAdmin())return;
+  var nm=document.getElementById('sv-nm').value.trim();if(!nm){toastM('fill_name');return;}
+  var warTxt=document.getElementById('sv-war').value;var war=parseInt(warTxt,10)||0;
+  var existing=editingItemId&&posItems.find(function(p){return p.id===editingItemId;});
+  if(existing){
+    existing.nm=nm;existing.nmEN=nm;existing.pr=parseFloat(document.getElementById('sv-price').value)||0;existing.cost=Number(document.getElementById('sv-cost').value||0);existing.warrantyDays=war;existing.icon=document.getElementById('sv-icon').value||'🧰';existing.cat='service';
+    toast('Servis dikemaskini.');
+  }else{
+    posItems.push({id:'sx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('sv-price').value)||0,cost:Number(document.getElementById('sv-cost').value||0),warrantyDays:war,icon:document.getElementById('sv-icon').value||'🧰',cat:'service'});
+    toastM('save_svc');
+  }
+  editingItemId='';resetItemEditLabels();['sv-nm','sv-price','sv-part','sv-cost'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderPOS();renderAllItems();saveState();goPg('p-pos');
+}
+
+function savePkg(){
+  if(!requireAdmin())return;
+  var nm=document.getElementById('pk-nm').value.trim();if(!nm){toastM('fill_name');return;}
+  var existing=editingItemId&&posItems.find(function(p){return p.id===editingItemId;});
+  if(existing){
+    existing.nm=nm;existing.nmEN=nm;existing.pr=parseFloat(document.getElementById('pk-price').value)||0;existing.cost=Number(document.getElementById('pk-cost').value||0);existing.warrantyDays=Number(document.getElementById('pk-war').value||30);existing.icon=document.getElementById('pk-icon').value||'🎁';existing.cat='pkg';
+    toast('Pakej dikemaskini.');
+  }else{
+    posItems.push({id:'pkx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('pk-price').value)||0,cost:Number(document.getElementById('pk-cost').value||0),warrantyDays:Number(document.getElementById('pk-war').value||30),icon:document.getElementById('pk-icon').value||'🎁',cat:'pkg'});
+    toastM('save_pkg');
+  }
+  editingItemId='';resetItemEditLabels();['pk-nm','pk-tag','pk-price','pk-orig','pk-terms','pk-cost','pk-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderPOS();renderAllItems();saveState();goPg('p-pos');
+}
+
+function renderReviews(){
+  var el=document.getElementById('review-list');if(!el)return;
+  el.innerHTML=reviews.map(function(r){
+    var stars='';for(var i=1;i<=5;i++)stars+='<span style="font-size:13px;color:'+(i<=r.star?'#BA7517':'var(--color-border-secondary)')+';">★</span>';
+    return '<div class="dr"><div><div style="display:flex;align-items:center;gap:5px;"><div class="av" style="width:19px;height:19px;font-size:8px;background:#ECFFD1;color:#1A1A18;">'+r.nm.substring(0,2)+'</div><span style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+r.nm+'</span></div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:2px;">'+r.txt+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:2px;">'+stars+'<span style="font-size:9px;color:var(--color-text-tertiary);">'+r.date+'</span></div></div></div>';
+  }).join('');
+}
+
+function setStar(n){curStar=n;document.querySelectorAll('#star-row .star').forEach(function(s,i){s.classList.toggle('on',i<n);});}
+function submitReview(){
+  if(!curStar){toast(lang==='en'?'Please select a rating!':'Pilih bintang dulu!');return;}
+  var txt=document.getElementById('rev-txt').value||(lang==='en'?'Great service!':'Bagus!');
+  reviews.unshift({nm:lang==='en'?'You':'Anda',star:curStar,txt:txt,date:lang==='en'?'Today':'Hari ini'});
+  renderReviews();document.getElementById('rev-txt').value='';curStar=0;
+  document.querySelectorAll('#star-row .star').forEach(function(s){s.classList.remove('on');});
+  saveState();toastM('review_ok');
+}
+
+loadState();loadSession();normalizePaymentSettings();normalizeData();syncLangButtons();loadThemeMode();loadCloudConfig();
+genQR();setInterval(genQR,3000);
+renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();if(currentUser){hideLogin();goTab('ticket');}else showLogin();if(cloudConfig)connectCloud();saveState();
+
+setTimeout(function(){
+  var s=document.getElementById('splash');
+  if(s)s.classList.add('hide');
+  setTimeout(function(){if(s)s.style.display='none';},500);
+},1800);
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
