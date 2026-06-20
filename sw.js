@@ -1,4 +1,4 @@
-const CACHE_NAME = 'phonefix-pro-v32';
+const CACHE_NAME = 'phonefix-pro-v47-desktop-light-mode';
 const ASSETS = [
   './',
   './index.html',

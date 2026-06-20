@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#AEEF00">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -280,6 +280,252 @@ body.theme-light .login-word{content:url('assets/brand/name-brand-black.png');}
 .splash h1{font-size:0;line-height:0;margin:0 0 8px;}
 .splash h1::after{content:'';display:block;width:min(290px,72vw);height:53px;background:url('assets/brand/name-brand-white.png') center/contain no-repeat;}
 .splash p{color:rgba(255,255,255,.72)!important;}
+.ai-box,.pill.on,.role-badge,.b4,.pay-total,.item-ico,.learn-img{color:#050505!important;}
+.ai-box .ai-t,.ai-box .ai-c,.pay-total span,.pill.on,.role-badge,.b4{color:#050505!important;}
+.card,.tk,.pos-row,.cust-card,.learn-card,.rpt-big,.mt,.stk-row,.pay-panel,.status-panel{color:var(--color-text-primary);}
+.card h3,.dl,.ml,.learn-sub,.item-meta{color:var(--color-text-secondary);}
+.rpt-empty{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:72px;
+  padding:12px;
+  border:.5px dashed var(--color-border-secondary);
+  border-radius:10px;
+  background:var(--color-background-secondary);
+  color:var(--color-text-secondary)!important;
+  line-height:1.45;
+}
+.rpt-empty b,.rpt-empty span{display:block;}
+.rpt-empty b{font-size:12px!important;color:var(--color-text-primary)!important;font-weight:750!important;line-height:1.25!important;}
+.rpt-empty span{font-size:11px!important;color:var(--color-text-secondary)!important;line-height:1.45!important;}
+.rpt-empty-ico{
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ECFFD1;
+  color:#050505!important;
+  font-size:16px!important;
+  font-weight:900;
+  flex-shrink:0;
+}
+body.theme-dark .card,
+body.theme-dark .tk,
+body.theme-dark .pos-row,
+body.theme-dark .cust-card,
+body.theme-dark .learn-card,
+body.theme-dark .rpt-big,
+body.theme-dark .mt,
+body.theme-dark .stk-row{color:var(--color-text-primary);}
+body.theme-light .card,
+body.theme-light .tk,
+body.theme-light .pos-row,
+body.theme-light .cust-card,
+body.theme-light .learn-card,
+body.theme-light .rpt-big,
+body.theme-light .mt,
+body.theme-light .stk-row{color:var(--color-text-primary);}
+
+@media (min-width: 760px){
+  body{background:var(--brand-black);overflow:hidden;}
+  body.theme-light{background:#f5f5f0;}
+  .app-wrap{max-width:100%;height:100vh;border-left:.5px solid rgba(255,255,255,.08);border-right:.5px solid rgba(255,255,255,.08);}
+  body.theme-light .app-wrap{border-left:.5px solid rgba(0,0,0,.08);border-right:.5px solid rgba(0,0,0,.08);}
+  .tb{padding-left:22px;padding-right:22px;}
+  .tb h1{font-size:18px;font-weight:650;}
+  .sa{padding:18px 22px 92px;}
+  .card,.tk,.pos-row,.cust-card,.learn-card,.rpt-big{border-radius:10px;}
+  .mg2{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+  #tk-list,#pos-list,#cust-list,#learn-list,#all-items-list,#stock-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;}
+  #tk-list .tk,#pos-list .pos-row,#cust-list .cust-card,#learn-list .learn-card,#all-items-list .dr,#stock-list .stk-row{margin-bottom:0;}
+  #p-laporan .sa{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start;}
+  #p-laporan .pill-row,#p-laporan .rpt-big{grid-column:1/-1;}
+  #p-laporan .sa{
+    max-width:1120px;
+    width:100%;
+    margin:0 auto;
+    grid-template-columns:1.25fr .85fr;
+    gap:12px;
+    padding-top:22px;
+    align-items:start;
+  }
+  #p-laporan .rpt-period{
+    grid-column:1/-1;
+    grid-row:1;
+    justify-self:stretch;
+    background:rgba(255,255,255,.04);
+    border:.5px solid var(--color-border-tertiary);
+    border-radius:999px;
+    padding:5px;
+    margin-bottom:0;
+    max-width:520px;
+    overflow:visible;
+  }
+  #p-laporan .rpt-period .pill{
+    border:none;
+    padding:7px 14px;
+    font-weight:650;
+    min-width:112px;
+    text-align:center;
+  }
+  #p-laporan .rpt-hero{
+    grid-column:1/-1;
+    grid-row:2;
+    text-align:left;
+    padding:26px 28px;
+    min-height:150px;
+    border:none;
+    background:
+      radial-gradient(circle at 88% 18%, rgba(174,239,0,.28), transparent 28%),
+      linear-gradient(135deg,#ECFFD1 0%,#AEEF00 44%,#7FB800 100%);
+    color:#050505;
+    box-shadow:0 22px 60px rgba(174,239,0,.16);
+    position:relative;
+    overflow:hidden;
+  }
+  #p-laporan .rpt-hero::after{
+    content:'';
+    position:absolute;
+    right:28px;
+    bottom:22px;
+    width:112px;
+    height:112px;
+    background:url('assets/brand/primary-dark.png') center/contain no-repeat;
+    opacity:.14;
+    pointer-events:none;
+  }
+  #p-laporan .rpt-hero .rl{font-size:13px;color:rgba(5,5,5,.72);font-weight:750;letter-spacing:.03em;text-transform:uppercase;}
+  #p-laporan .rpt-hero .rv{font-size:44px;line-height:1.05;color:#050505!important;font-weight:850;letter-spacing:0;margin-top:8px;}
+  #p-laporan .rpt-hero .rs{font-size:13px;color:rgba(5,5,5,.72);font-weight:700;margin-top:8px;}
+  #p-laporan .rpt-metrics{
+    grid-column:1/-1;
+    grid-row:3;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+    margin-bottom:0;
+  }
+  #p-laporan .rpt-metrics .mt{
+    background:linear-gradient(180deg,var(--color-background-primary),var(--color-background-secondary));
+    border:.5px solid var(--color-border-tertiary);
+    padding:16px;
+    border-radius:10px;
+  }
+  body.theme-light #p-laporan .rpt-metrics .mt{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.12);
+    box-shadow:0 10px 24px rgba(0,0,0,.07);
+  }
+  #p-laporan .rpt-metrics .ml{font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+  #p-laporan .rpt-metrics .mv{font-size:26px;font-weight:800;margin-top:7px;}
+  #p-laporan .rpt-card{
+    margin-bottom:0;
+    padding:16px;
+    border-radius:10px;
+    background:linear-gradient(180deg,var(--color-background-primary),rgba(255,255,255,.02));
+    box-shadow:0 14px 38px rgba(0,0,0,.16);
+  }
+  body.theme-light #p-laporan .rpt-card{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.12);
+    box-shadow:0 14px 34px rgba(0,0,0,.08);
+  }
+  #p-laporan .rpt-card h3{
+    font-size:11px;
+    letter-spacing:.09em;
+    font-weight:800;
+    margin-bottom:12px;
+  }
+  #p-laporan .rpt-empty{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-height:74px;
+    padding:12px;
+    border:.5px dashed var(--color-border-secondary);
+    border-radius:10px;
+    background:var(--color-background-secondary);
+    color:var(--color-text-secondary)!important;
+    line-height:1.45;
+  }
+  #p-laporan .rpt-empty b{font-size:12px;color:var(--color-text-primary)!important;font-weight:750;line-height:1.25;}
+  #p-laporan .rpt-empty span{font-size:11px;color:var(--color-text-secondary)!important;line-height:1.45;}
+  #p-laporan .rpt-empty-ico{
+    width:32px;
+    height:32px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#ECFFD1;
+    color:#050505!important;
+    font-size:16px;
+    font-weight:900;
+    flex-shrink:0;
+  }
+  body.theme-dark #p-laporan .rpt-empty{background:#242422;border-color:rgba(255,255,255,.18);}
+  body.theme-dark #p-laporan .rpt-empty b,
+  body.theme-dark #p-laporan .rpt-empty span{color:var(--color-text-primary)!important;}
+  @media(prefers-color-scheme:dark){
+    body:not(.theme-light) #p-laporan .rpt-empty{background:#242422;border-color:rgba(255,255,255,.18);}
+    body:not(.theme-light) #p-laporan .rpt-empty b,
+    body:not(.theme-light) #p-laporan .rpt-empty span{color:var(--color-text-primary)!important;}
+  }
+  #p-laporan .rpt-popular-card{grid-column:1;grid-row:4;}
+  #p-laporan .rpt-tech-card{grid-column:1;grid-row:5;}
+  #p-laporan .rpt-profit-card{grid-column:2;grid-row:4;}
+  #p-laporan .rpt-review-card{grid-column:2;grid-row:5;}
+  #p-laporan .rpt-cloud-card{grid-column:1;grid-row:6;}
+  #p-laporan .rpt-db-card{grid-column:2;grid-row:6;}
+  #p-laporan .rpt-staff-card{grid-column:1;grid-row:7;min-height:0;}
+  #p-laporan .bar-row{gap:10px;margin-bottom:12px;}
+  #p-laporan .bar-lbl{width:74px;font-size:12px;text-align:left;}
+  #p-laporan .bar-track{height:9px;border-radius:999px;}
+  body.theme-light #p-laporan .bar-track{background:#eeede8;}
+  #p-laporan .bar-fill{height:9px;border-radius:999px;}
+  #p-laporan .bar-val{font-size:12px;font-weight:800;text-align:right;}
+  #p-laporan .dr{padding:9px 0;}
+  body.theme-light #p-laporan .dr{border-bottom-color:rgba(0,0,0,.10);}
+  #p-laporan .dl{font-size:12px;}
+  #p-laporan .dv{font-size:12px;font-weight:750;}
+  #p-laporan > .sa > .sbtn,
+  #p-laporan > .sa > .sbtn2{
+    grid-column:2;
+    max-width:320px;
+    justify-self:end;
+    width:100%;
+  }
+  #p-add-tk .sa,#p-add-product .sa,#p-add-service .sa,#p-add-package .sa,#p-staff-report .sa{max-width:860px;width:100%;margin:0 auto;}
+  #p-tk-detail .sa,#p-cust-detail .sa,#p-ai .sa,#p-photo .sa,#p-qr .sa{max-width:900px;width:100%;margin:0 auto;}
+  .ff input,.ff select,.ff textarea{font-size:14px;padding:11px 12px;}
+  .ff label{font-size:12px;}
+  .sbtn,.sbtn2{font-size:14px;padding:13px;}
+  .bnav-wrap{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(720px,calc(100% - 32px));border:.5px solid var(--color-border-secondary);border-radius:16px;padding-bottom:0;box-shadow:0 16px 40px rgba(0,0,0,.32);overflow:hidden;z-index:30;}
+  .bnav{padding:7px 0 5px;}
+  .nt svg{width:22px;height:22px;}
+  .nt span{font-size:10px;}
+  .trademark{font-size:9px;padding-bottom:6px;}
+  .fab{right:28px;bottom:100px;width:52px;height:52px;}
+  .scan-overlay,.pay-overlay,.status-overlay{position:fixed;}
+  .pay-overlay,.status-overlay{align-items:center;justify-content:center;}
+  .pay-panel,.status-panel{max-width:560px;border-radius:14px;}
+  .scan-box{max-width:520px;width:100%;margin-left:auto;margin-right:auto;}
+  .scan-manual{max-width:720px;width:100%;margin-left:auto;margin-right:auto;}
+  .login-card{width:min(440px,100%);}
+}
+
+@media (min-width: 1180px){
+  .app-wrap{max-width:1180px;}
+  #tk-list,#pos-list,#cust-list,#learn-list,#all-items-list,#stock-list{grid-template-columns:repeat(3,minmax(0,1fr));}
+  #p-laporan .sa{grid-template-columns:1.35fr .9fr;}
+  #p-laporan .pill-row,#p-laporan .rpt-big,#p-laporan .rpt-metrics{grid-column:1/-1;}
+}
+
+@media (max-width: 759px){
+  .app-wrap{max-width:430px;}
+}
 </style>
 </head>
 <body>
@@ -557,9 +803,11 @@ body.theme-light .login-word{content:url('assets/brand/name-brand-black.png');}
       <div class="sa">
         <div class="ff"><label id="lbl-cust-nm">Nama pelanggan</label><input type="text" id="f-nm" placeholder="Ahmad Hafizi"></div>
         <div class="ff"><label id="lbl-cust-ph">No. telefon</label><input type="tel" id="f-ph" placeholder="01x-xxx xxxx"></div>
-        <div class="ff"><label id="lbl-f-device">Peranti</label><select id="f-dev"><option>iPhone</option><option>Samsung</option><option>Xiaomi</option><option>OPPO</option><option>Vivo</option><option>Huawei</option><option>Lain-lain</option></select></div>
+        <div class="ff"><label id="lbl-f-device">Peranti</label><select id="f-dev" onchange="toggleCustomTicketFields()"><option>iPhone</option><option>Samsung</option><option>Xiaomi</option><option>OPPO</option><option>Vivo</option><option>Huawei</option><option>Lain-lain</option></select></div>
+        <div class="ff" id="f-new-model-box" style="display:none;"><label>New model</label><input type="text" id="f-new-model" placeholder="Masukkan model baru"></div>
         <div class="ff"><label id="lbl-f-model">Model</label><input type="text" id="f-mod" placeholder="iPhone 14 Pro"></div>
-        <div class="ff"><label id="lbl-f-issue">Masalah</label><select id="f-prb"><option>Skrin pecah</option><option>Bateri drain</option><option>Tak boleh charge</option><option>Speaker rosak</option><option>Water damage</option><option>Kamera rosak</option><option>Lain-lain</option></select></div>
+        <div class="ff"><label id="lbl-f-issue">Masalah</label><select id="f-prb" onchange="toggleCustomTicketFields()"><option>Skrin pecah</option><option>Bateri drain</option><option>Tak boleh charge</option><option>Speaker rosak</option><option>Water damage</option><option>Kamera rosak</option><option>Lain-lain</option></select></div>
+        <div class="ff" id="f-new-issue-box" style="display:none;"><label>Masalah lain</label><input type="text" id="f-new-issue" placeholder="Masukkan masalah sendiri"></div>
         <div class="ff"><label id="lbl-f-note">Catatan</label><textarea id="f-nt" placeholder="Hurai masalah..."></textarea></div>
         <div class="evidence-box">
           <div class="section-hdr">Bukti Gambar</div>
@@ -887,65 +1135,68 @@ body.theme-light .login-word{content:url('assets/brand/name-brand-black.png');}
         </div>
       </div>
       <div class="sa">
-        <div class="card admin-only">
+        <div class="card admin-only rpt-card rpt-staff-card">
           <h3>Staff Reports</h3>
           <div id="admin-report-list"></div>
         </div>
-        <div class="card admin-only">
+        <div class="card admin-only rpt-card rpt-cloud-card">
           <h3>Cloud Sync Multi Device</h3>
+          <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t">Auto Firebase</div><div class="ai-c">Cloud sudah diset dalam app. Semua account yang diluluskan boss akan guna database kedai yang sama; staff tidak perlu isi Firebase manual.</div></div>
           <div class="dr"><span class="dl"><span class="sync-dot" id="sync-dot"></span>Status sync</span><span class="dv" id="sync-status">Offline local</span></div>
-          <div class="ff"><label>Firebase apiKey</label><input type="text" id="fb-apiKey" placeholder="AIza..."></div>
-          <div class="ff"><label>Firebase authDomain</label><input type="text" id="fb-authDomain" placeholder="project-id.firebaseapp.com"></div>
-          <div class="ff"><label>Firebase projectId</label><input type="text" id="fb-projectId" placeholder="project-id"></div>
-          <div class="ff"><label>Firebase appId</label><input type="text" id="fb-appId" placeholder="1:xxxx:web:xxxx"></div>
-          <div class="ff"><label>Database ID / Kedai</label><input type="text" id="fb-docId" placeholder="lubuk-it-main"></div>
-          <button class="sbtn" onclick="saveCloudConfig()">Save & Connect Sync</button>
+          <div class="cloud-config-hidden" aria-hidden="true">
+            <input type="hidden" id="fb-apiKey">
+            <input type="hidden" id="fb-authDomain">
+            <input type="hidden" id="fb-projectId">
+            <input type="hidden" id="fb-appId">
+            <input type="hidden" id="fb-docId">
+          </div>
+          <button class="sbtn" onclick="saveCloudConfig()">Reconnect Sync</button>
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px;">
             <button class="sbtn2" onclick="pushCloudNow()" style="margin:0;">Upload Data Ini</button>
             <button class="sbtn2" onclick="pullCloudNow()" style="margin:0;">Download Cloud</button>
           </div>
         </div>
-        <div class="card admin-only">
+        <div class="card admin-only rpt-card rpt-db-card">
           <h3>Database Bulanan</h3>
           <div class="dr"><span class="dl">Export bulan ini</span><span class="dv" id="db-size">Auto backup</span></div>
           <button class="sbtn" onclick="exportDB()">Export Database JSON</button>
           <button class="sbtn2" onclick="document.getElementById('db-import').click()">Import Database Lama</button>
           <input class="import-file" type="file" id="db-import" accept="application/json,.json" onchange="importDB(this)">
         </div>
-        <div class="pill-row" id="rpt-main-period">
+        <div class="pill-row rpt-period" id="rpt-main-period">
           <div class="pill on" onclick="setPill(this,'rpt-main-period')" id="rm-daily">Harian</div>
           <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-weekly">Mingguan</div>
           <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-monthly">Bulanan</div>
           <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-yearly">Tahunan</div>
         </div>
-        <div class="rpt-big"><div class="rl" id="lbl-rpt2-rev">Hasil bulan ini</div><div class="rv">RM 12,480</div><div class="rs" id="lbl-rpt2-vs">+18% berbanding bulan lalu</div></div>
-        <div class="mg2">
+        <div class="rpt-big rpt-hero"><div class="rl" id="lbl-rpt2-rev">Hasil bulan ini</div><div class="rv">RM 12,480</div><div class="rs" id="lbl-rpt2-vs">+18% berbanding bulan lalu</div></div>
+        <div class="mg2 rpt-metrics">
           <div class="mt"><div class="ml" id="lbl-rpt2-repair">Repair selesai</div><div class="mv">48</div></div>
           <div class="mt"><div class="ml" id="lbl-rpt2-cust">Pelanggan baru</div><div class="mv">31</div></div>
           <div class="mt"><div class="ml" id="lbl-rpt2-avg">Purata ticket</div><div class="mv">RM 260</div></div>
           <div class="mt"><div class="ml" id="lbl-rpt2-rating">Rating kedai</div><div class="mv">4.8 ★</div></div>
         </div>
-        <div class="card">
+        <div class="card rpt-card rpt-popular-card">
           <h3 id="lbl-rpt2-pop">Repair Popular</h3>
           <div class="bar-row"><span class="bar-lbl" id="lbl-r2-skrin">Skrin</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#7FB800;"></div></div><span class="bar-val">38</span></div>
           <div class="bar-row"><span class="bar-lbl" id="lbl-r2-batt">Bateri</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#1D9E75;"></div></div><span class="bar-val">26</span></div>
           <div class="bar-row"><span class="bar-lbl" id="lbl-r2-chg">Charging</span><div class="bar-track"><div class="bar-fill" style="width:35%;background:#D85A30;"></div></div><span class="bar-val">17</span></div>
           <div class="bar-row"><span class="bar-lbl" id="lbl-r2-spk">Speaker</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:#D4537E;"></div></div><span class="bar-val">9</span></div>
         </div>
-        <div class="card">
+        <div class="card rpt-card rpt-tech-card">
           <h3 id="lbl-rpt2-tech">Prestasi Technician</h3>
           <div class="dr"><span class="dl">Hafiz</span><span id="lbl-r2-hafiz" class="dv">22 repair · RM 5,720</span></div>
           <div class="dr"><span class="dl">Razif</span><span id="lbl-r2-razif" class="dv">18 repair · RM 4,680</span></div>
           <div class="dr"><span class="dl">Amirul</span><span id="lbl-r2-amirul" class="dv">8 repair · RM 2,080</span></div>
         </div>
-        <div class="card">
+        <div class="card rpt-card rpt-profit-card">
           <h3 id="lbl-rpt2-profit">Analisis Untung</h3>
           <div class="dr"><span class="dl" id="lbl-gross">Jualan kasar</span><span class="dv">RM 12,480</span></div>
           <div class="dr"><span class="dl" id="lbl-parts-cost">Kos part</span><span class="dv">RM 5,200</span></div>
           <div class="dr"><span class="dl" id="lbl-net-profit">Untung bersih</span><span class="dv" style="color:#3B6D11;">RM 7,280</span></div>
           <div class="dr"><span class="dl" id="lbl-margin-pct">% margin</span><span class="dv" style="color:#3B6D11;">58%</span></div>
         </div>
-        <div class="card">
+        <div class="card rpt-card rpt-review-card">
           <h3 id="lbl-review-hdr">Collect Review</h3>
           <div id="review-list"></div>
           <div style="margin-top:7px;">
@@ -1100,6 +1351,15 @@ var pendingFullReceiptRaw='';
 var APP_TEST_URL='http://127.0.0.1:5174/index.html';
 var SESSION_KEY='phonefix-pro-session';
 var CLOUD_CONFIG_KEY='phonefix-pro-cloud-config';
+var FORCE_DEFAULT_CLOUD_CONFIG=true;
+var DEFAULT_CLOUD_CONFIG={
+  apiKey:'AIzaSyAvot2ctU-pIl4dxSkAK8eFmfxtJtuqvww',
+  authDomain:'phonefix-pro-52edb.firebaseapp.com',
+  projectId:'phonefix-pro-52edb',
+  storageBucket:'phonefix-pro-52edb.firebasestorage.app',
+  appId:'1:1074786708622:web:2ab68fa3f7dfa8b9cb2ddf',
+  docId:'lubuk-it-main'
+};
 var USERS={
   admin:{pin:'Padugiler01@',role:'admin',name:'Admin',email:'admin',status:'approved'}
 };
@@ -1337,7 +1597,7 @@ function renderAccountRequests(){
   var history=signupRequests.filter(function(r){return r.status!=='pending';}).slice(0,8);
   var html='';
   html+=pending.map(function(r){
-    return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:8px 0;"><div class="dr" style="border:none;padding:0;align-items:flex-start;"><span class="dl"><b>'+cleanTxt(r.name)+'</b><br><span class="item-meta">'+cleanTxt(r.email)+' · '+reportDate(r.requestedAt)+'</span></span><span class="bdg b2">Pending</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;"><select id="role-'+cleanTxt(r.id)+'" style="width:100%;padding:8px;border-radius:8px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="staff">Staff</option><option value="admin">Admin</option></select><button class="sbtn2" onclick="approveSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin:0;">Approve</button></div><button class="sbtn2" onclick="rejectSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin-top:6px;">Reject</button></div>';
+    return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:8px 0;"><div class="dr" style="border:none;padding:0;align-items:flex-start;"><span class="dl"><b>'+cleanTxt(r.name)+'</b><br><span class="item-meta">'+cleanTxt(r.email)+' · '+reportDate(r.requestedAt)+'</span></span><span class="bdg b2">Pending</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;"><div class="bdg b3" style="display:flex;align-items:center;justify-content:center;">Role: Staff</div><button class="sbtn2" onclick="approveSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin:0;">Approve Staff</button></div><button class="sbtn2" onclick="rejectSignup(&quot;'+cleanTxt(r.id)+'&quot;)" style="margin-top:6px;">Reject</button></div>';
   }).join('');
   if(!pending.length)html+='<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Tiada request profile baru.</div>';
   if(history.length){
@@ -1350,8 +1610,7 @@ function renderAccountRequests(){
 function approveSignup(id){
   if(!requireAdmin())return;
   var r=signupRequests.find(function(x){return x.id===id;});if(!r)return;
-  var roleEl=document.getElementById('role-'+id);
-  var role=(roleEl&&roleEl.value)||'staff';
+  var role='staff';
   USERS[r.email]={pin:r.password,role:role,name:r.name,email:r.email,status:'approved',approvedAt:new Date().toISOString(),approvedBy:currentUser&&currentUser.username};
   r.status='approved';r.role=role;r.approvedAt=new Date().toISOString();r.approvedBy=currentUser&&currentUser.username;
   saveState();renderAccountRequests();toast('Account approved sebagai '+role+'.');
@@ -1452,8 +1711,10 @@ function setSyncStatus(text,state){
 }
 function loadCloudConfig(){
   try{cloudConfig=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null');}catch(e){cloudConfig=null;}
-  if(!cloudConfig)return;
-  ['apiKey','authDomain','projectId','appId','docId'].forEach(function(k){var el=document.getElementById('fb-'+k);if(el)el.value=cloudConfig[k]||'';});
+  if(FORCE_DEFAULT_CLOUD_CONFIG||!cloudConfig)cloudConfig=Object.assign({},DEFAULT_CLOUD_CONFIG);
+  cloudConfig=Object.assign({},DEFAULT_CLOUD_CONFIG,cloudConfig||{});
+  localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cloudConfig));
+  ['apiKey','authDomain','projectId','appId','docId'].forEach(function(k){var el=document.getElementById('fb-'+k);if(el){el.value=cloudConfig[k]||'';el.readOnly=FORCE_DEFAULT_CLOUD_CONFIG;}});
 }
 function readCloudForm(){
   return {
@@ -1466,9 +1727,10 @@ function readCloudForm(){
 }
 function saveCloudConfig(){
   if(!requireAdmin())return;
-  cloudConfig=readCloudForm();
+  cloudConfig=FORCE_DEFAULT_CLOUD_CONFIG?Object.assign({},DEFAULT_CLOUD_CONFIG):readCloudForm();
   if(!cloudConfig.apiKey||!cloudConfig.projectId||!cloudConfig.appId){toast('Isi Firebase apiKey, projectId dan appId dahulu.');return;}
   localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cloudConfig));
+  ['apiKey','authDomain','projectId','appId','docId'].forEach(function(k){var el=document.getElementById('fb-'+k);if(el){el.value=cloudConfig[k]||'';el.readOnly=FORCE_DEFAULT_CLOUD_CONFIG;}});
   connectCloud();
 }
 function connectCloud(){
@@ -1480,14 +1742,19 @@ function connectCloud(){
       apiKey:cloudConfig.apiKey,
       authDomain:cloudConfig.authDomain,
       projectId:cloudConfig.projectId,
+      storageBucket:cloudConfig.storageBucket,
       appId:cloudConfig.appId
     },appName);
     cloudAuth=app.auth();
     cloudDb=app.firestore();
     setSyncStatus('Firebase auth connecting...','on');
     var ready=cloudAuth.currentUser?Promise.resolve(cloudAuth.currentUser):cloudAuth.signInAnonymously().then(function(res){return res.user;});
-    ready.then(function(){startCloudListener();}).catch(function(){setSyncStatus('Firebase Auth gagal - enable Anonymous Auth','err');});
-  }catch(e){setSyncStatus('Cloud config error','err');}
+    ready.then(function(){startCloudListener();}).catch(function(err){
+      var code=(err&&err.code)||'unknown';
+      setSyncStatus('Firebase Auth gagal: '+code,'err');
+      console.warn('PhoneFix Pro Firebase Auth failed',err);
+    });
+  }catch(e){setSyncStatus('Cloud config error: '+(e&&e.code?e.code:'semak config'),'err');}
 }
 function startCloudListener(){
   if(!cloudDb||!cloudConfig)return;
@@ -1507,7 +1774,11 @@ function startCloudListener(){
 }
 function applyCloudState(s){
   applyingCloud=true;
+  var localPending=signupRequests.filter(function(r){return r.status==='pending';});
   USERS=s.users?Object.assign(defaultUsers(),s.users):USERS;signupRequests=s.signupRequests||signupRequests;tickets=s.tickets||tickets;nextId=s.nextId||nextId;posItems=s.posItems||posItems;stocks=s.stocks||stocks;custs=s.custs||custs;reviews=s.reviews||reviews;photos=s.photos||photos;sales=s.sales||sales;staffReports=s.staffReports||staffReports;paymentSettings=s.paymentSettings||paymentSettings;lang=s.lang||lang;
+  localPending.forEach(function(r){
+    if(!signupRequests.some(function(x){return x.email===r.email;}))signupRequests.unshift(r);
+  });
   curTk=tickets[0]||null;curCust=custs[0]||null;normalizePaymentSettings();normalizeData();
   localStorage.setItem(STORE_KEY,JSON.stringify(s));
   syncLangButtons();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();
@@ -1520,8 +1791,7 @@ function scheduleCloudPush(){
 }
 function pushCloudNow(silent){
   if(!silent&&!requireAdmin())return;
-  if(silent&&!currentUser)return;
-  if(!cloudDb||!cloudConfig){if(!silent)toast('Cloud belum connected. Isi Firebase config dahulu.');return;}
+  if(!cloudDb||!cloudConfig){if(!silent)toast('Cloud belum connected. Tekan Reconnect Sync atau semak internet.');return;}
   var state=currentState();lastCloudAt=state.updatedAt;
   cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main').set({state:state,updatedAt:state.updatedAt},{merge:true}).then(function(){
     setSyncStatus('Uploaded '+new Date().toLocaleTimeString('ms-MY'),'on');if(!silent)toast('Data diupload ke cloud.');
@@ -1707,7 +1977,7 @@ function renderStaffReports(){
     adminEl.innerHTML=staffReports.map(function(r){
       var st=r.status==='closed'?'Selesai':'Open';
       return '<div style="border-bottom:.5px solid var(--color-border-tertiary);padding:7px 0;"><div class="dr" style="border:none;padding:0;"><span class="dl"><b>'+cleanTxt(r.type)+'</b> · '+cleanTxt(r.ref||'Tiada rujukan')+'</span><span class="bdg '+(r.status==='closed'?'b3':'b2')+'">'+st+'</span></div><div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;margin-top:4px;">'+cleanTxt(r.msg)+'</div><div class="item-meta">'+cleanTxt(r.by)+' · '+reportDate(r.date)+'</div><textarea id="fb-'+r.id+'" placeholder="Tulis feedback admin..." style="width:100%;padding:7px 9px;border-radius:7px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:11px;color:var(--color-text-primary);font-family:var(--font-sans);min-height:38px;resize:none;margin:6px 0 4px;">'+cleanTxt(r.feedback||'')+'</textarea><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;"><button class="sbtn2" onclick="saveReportFeedback(&quot;'+r.id+'&quot;)" style="margin:0;">Save Feedback</button><button class="sbtn2" onclick="toggleReportClosed(&quot;'+r.id+'&quot;)" style="margin:0;">'+(r.status==='closed'?'Reopen':'Mark Selesai')+'</button></div></div>';
-    }).join('')||'<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Belum ada staff report.</div>';
+    }).join('')||'<div class="rpt-empty"><div class="rpt-empty-ico">✓</div><div><b>Tiada staff report baru</b><br><span>Semua feedback, kesilapan order, pertanyaan staff dan isu operasi akan muncul di sini.</span></div></div>';
   }
 }
 function saveReportFeedback(id){
@@ -1961,6 +2231,16 @@ function clearFullReceipt(){
   var input=document.getElementById('full-receipt-file');if(input)input.value='';
   var img=document.getElementById('full-receipt-preview');if(img){img.src='';img.classList.remove('on');}
 }
+function toggleCustomTicketFields(){
+  var dev=(document.getElementById('f-dev')||{}).value||'';
+  var prb=(document.getElementById('f-prb')||{}).value||'';
+  var modelBox=document.getElementById('f-new-model-box');
+  var issueBox=document.getElementById('f-new-issue-box');
+  if(modelBox)modelBox.style.display=dev==='Lain-lain'?'block':'none';
+  if(issueBox)issueBox.style.display=prb==='Lain-lain'?'block':'none';
+  if(dev!=='Lain-lain'){var nm=document.getElementById('f-new-model');if(nm)nm.value='';}
+  if(prb!=='Lain-lain'){var ni=document.getElementById('f-new-issue');if(ni)ni.value='';}
+}
 function buildEvidenceMeta(ticket){
   return {
     title:ticket.nm,
@@ -2020,6 +2300,11 @@ function generateEvidenceImage(src,meta){
     if(!src){resolve('');return;}
     var img=new Image();
     img.onload=function(){
+      var logo=new Image();
+      logo.onload=function(){drawEvidenceLabel(logo);};
+      logo.onerror=function(){drawEvidenceLabel(null);};
+      logo.src='assets/brand/primary.png';
+      function drawEvidenceLabel(logoImg){
       var maxW=1200;
       var scale=Math.min(1,maxW/img.width);
       var w=Math.round(img.width*scale);
@@ -2034,16 +2319,44 @@ function generateEvidenceImage(src,meta){
       var top=h+Math.max(24,Math.round(labelH*0.12));
       ctx.fillStyle='#fff';ctx.fillRect(0,h,w,labelH);
       ctx.fillStyle='rgba(0,0,0,.08)';ctx.fillRect(0,h,w,1);
+      var logoSize=Math.max(76,Math.round(labelH*0.34));
+      var logoX=pad;
+      var logoY=top+Math.round(labelH*0.02);
+      if(logoImg){
+        ctx.save();
+        var radius=Math.round(logoSize*0.18);
+        ctx.beginPath();
+        ctx.moveTo(logoX+radius,logoY);
+        ctx.lineTo(logoX+logoSize-radius,logoY);
+        ctx.quadraticCurveTo(logoX+logoSize,logoY,logoX+logoSize,logoY+radius);
+        ctx.lineTo(logoX+logoSize,logoY+logoSize-radius);
+        ctx.quadraticCurveTo(logoX+logoSize,logoY+logoSize,logoX+logoSize-radius,logoY+logoSize);
+        ctx.lineTo(logoX+radius,logoY+logoSize);
+        ctx.quadraticCurveTo(logoX,logoY+logoSize,logoX,logoY+logoSize-radius);
+        ctx.lineTo(logoX,logoY+radius);
+        ctx.quadraticCurveTo(logoX,logoY,logoX+radius,logoY);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(logoImg,logoX,logoY,logoSize,logoSize);
+        ctx.restore();
+      }else{
+        ctx.fillStyle='#AEEF00';
+        ctx.fillRect(logoX,logoY,logoSize,logoSize);
+        ctx.fillStyle='#050505';
+        ctx.font='900 '+Math.round(logoSize*0.5)+'px Arial, sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText('P',logoX+logoSize/2,logoY+logoSize*0.67);
+        ctx.textAlign='left';
+      }
+      var textX=logoX+logoSize+Math.max(18,Math.round(w*0.024));
       ctx.fillStyle='#1a1a18';ctx.font='800 '+Math.max(26,Math.round(w*0.042))+'px Arial, sans-serif';
       var title=meta.title||meta.name||'PhoneFix Pro';
-      ctx.fillText(title,pad,top+Math.round(labelH*0.13));
-      var titleW=ctx.measureText(title).width;
-      var badgeX=pad+titleW+Math.max(10,Math.round(w*0.012));
-      var badgeR=Math.max(14,Math.round(w*0.018));
-      ctx.fillStyle='#1296F6';ctx.beginPath();ctx.arc(badgeX+badgeR,top+Math.round(labelH*0.09),badgeR,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(3,Math.round(w*0.004));ctx.beginPath();ctx.moveTo(badgeX+badgeR*0.55,top+Math.round(labelH*0.09));ctx.lineTo(badgeX+badgeR*0.9,top+Math.round(labelH*0.09)+badgeR*0.35);ctx.lineTo(badgeX+badgeR*1.5,top+Math.round(labelH*0.09)-badgeR*0.45);ctx.stroke();
+      ctx.fillText(title,textX,top+Math.round(labelH*0.13));
+      ctx.fillStyle='#AEEF00';
+      ctx.font='800 '+Math.max(12,Math.round(w*0.018))+'px Arial, sans-serif';
+      ctx.fillText(meta.badge||'PhoneFix Pro',textX,top+Math.round(labelH*0.23));
       ctx.fillStyle='#333';ctx.font='500 '+Math.max(18,Math.round(w*0.027))+'px Arial, sans-serif';
-      wrapCanvasText(ctx,meta.subtitle||'',pad,top+Math.round(labelH*0.28),w-pad*2,Math.max(24,Math.round(w*0.035)),2);
+      wrapCanvasText(ctx,meta.subtitle||'',textX,top+Math.round(labelH*0.36),w-textX-pad,Math.max(24,Math.round(w*0.035)),2);
       var stats=meta.stats||[];
       var statY=h+Math.round(labelH*0.72);
       var colW=(w-pad*2)/Math.max(1,stats.length||3);
@@ -2057,6 +2370,7 @@ function generateEvidenceImage(src,meta){
         ctx.textAlign='left';
       });
       resolve(canvas.toDataURL('image/jpeg',0.88));
+      }
     };
     img.onerror=function(){resolve(src);};
     img.src=src;
@@ -2165,7 +2479,14 @@ async function saveTk(){
   var deposit=Number(document.getElementById('f-dp').value||0);
   if(deposit>0&&!pendingDepositReceiptRaw){toast('Masukkan gambar resit deposit dahulu.');return;}
   var ph=document.getElementById('f-ph').value.trim();
-  var tk={id:'TK-0'+nextId++,dev:(document.getElementById('f-mod').value||document.getElementById('f-dev').value),prb:document.getElementById('f-prb').value,note:document.getElementById('f-nt').value||'—',nm:nm,ph:ph,av:init,avbg:'#ECFFD1',avc:'#1A1A18',tc:document.getElementById('f-tc').value,pr:'RM '+price,dp:'RM '+deposit,st:'new',cost:Math.round(price*0.5),warrantyDays:Number(document.getElementById('f-war').value||30)};
+  var devSelect=document.getElementById('f-dev').value;
+  var customModel=(document.getElementById('f-new-model')||{}).value||'';
+  var model=(document.getElementById('f-mod').value||'').trim();
+  var device=(devSelect==='Lain-lain'?(customModel.trim()||model||'Model baru'):(model||devSelect));
+  var issueSelect=document.getElementById('f-prb').value;
+  var customIssue=((document.getElementById('f-new-issue')||{}).value||'').trim();
+  var issue=issueSelect==='Lain-lain'?(customIssue||'Masalah lain'):(issueSelect||customIssue);
+  var tk={id:'TK-0'+nextId++,dev:device,prb:issue,note:document.getElementById('f-nt').value||'—',nm:nm,ph:ph,av:init,avbg:'#ECFFD1',avc:'#1A1A18',tc:document.getElementById('f-tc').value,pr:'RM '+price,dp:'RM '+deposit,st:'new',cost:Math.round(price*0.5),warrantyDays:Number(document.getElementById('f-war').value||30)};
   var downloads=[];
   if(pendingEvidenceRaw){
     var labeled=await generateEvidenceImage(pendingEvidenceRaw,buildEvidenceMeta(tk));
@@ -2184,7 +2505,8 @@ async function saveTk(){
   }
   tickets.unshift(tk);curTk=tk;updateCustomerFromTicket(tk,ph);
   toastM('save_tk');
-  ['f-nm','f-ph','f-mod','f-nt','f-pr','f-dp','f-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['f-nm','f-ph','f-mod','f-new-model','f-new-issue','f-nt','f-pr','f-dp','f-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-dev').value='iPhone';document.getElementById('f-prb').value='Skrin pecah';toggleCustomTicketFields();
   clearTicketEvidence();clearDepositReceipt();
   renderTkList();renderCusts();updateMetrics();saveState();queueImageDownloads(downloads);goPg('p-ticket');sendNewTicketWhatsApp(tk);
 }
@@ -2552,6 +2874,7 @@ function submitReview(){
 
 loadState();loadSession();normalizePaymentSettings();normalizeData();syncLangButtons();loadThemeMode();loadCloudConfig();
 genQR();setInterval(genQR,3000);
+toggleCustomTicketFields();
 renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();if(currentUser){hideLogin();goTab('ticket');}else showLogin();if(cloudConfig)connectCloud();saveState();
 
 setTimeout(function(){
