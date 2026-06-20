@@ -203,6 +203,17 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);ov
 .login-title{text-align:center;font-size:20px;font-weight:700;color:var(--color-text-primary);}
 .login-sub{text-align:center;font-size:11px;color:var(--color-text-secondary);margin:4px 0 14px;line-height:1.4;}
 .role-badge{font-size:9px;font-weight:600;padding:3px 7px;border-radius:999px;background:#ECFFD1;color:#1A1A18;border:.5px solid #B6F000;}
+.public-ticket-overlay{position:fixed;inset:0;background:var(--color-background-primary);z-index:1250;display:none;overflow-y:auto;padding:18px;}
+.public-ticket-overlay.on{display:block;}
+.public-ticket-card{width:min(560px,100%);margin:0 auto;background:var(--color-background-secondary);border:.5px solid var(--color-border-secondary);border-radius:16px;padding:16px;box-shadow:0 18px 60px rgba(0,0,0,.18);}
+.public-ticket-logo{width:58px;height:58px;border-radius:14px;background:#AEEF00;display:flex;align-items:center;justify-content:center;margin-bottom:12px;overflow:hidden;}
+.public-ticket-logo img{width:100%;height:100%;object-fit:cover;}
+.public-ticket-title{font-size:18px;font-weight:800;color:var(--color-text-primary);margin-bottom:4px;}
+.public-ticket-sub{font-size:12px;color:var(--color-text-secondary);line-height:1.45;margin-bottom:12px;}
+.public-status{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#ECFFD1;border:.5px solid #B6F000;border-radius:12px;padding:12px;margin-bottom:10px;color:#1A1A18;}
+.public-status b{font-size:16px;}
+.public-detail{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:12px;padding:11px;margin-top:8px;}
+.public-detail .dr:last-child{border-bottom:none;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#a09f9b;display:inline-block;margin-right:5px;}
 .sync-dot.on{background:#3B6D11;}
 .sync-dot.err{background:#A32D2D;}
@@ -224,7 +235,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);ov
 .pay-panel{width:100%;max-height:92%;overflow-y:auto;background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:14px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.35);}
 .pay-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
 .pay-head h2{font-size:15px;font-weight:600;color:var(--color-text-primary);}
-.pay-qr{width:150px;height:150px;margin:8px auto;border-radius:10px;background:#fff;border:8px solid #fff;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:2px;box-shadow:0 0 0 .5px var(--color-border-secondary);}
+.pay-qr{width:210px;height:210px;margin:8px auto 12px;border-radius:12px;background:#fff;border:10px solid #fff;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:2px;box-shadow:0 0 0 .5px var(--color-border-secondary);}
 .pay-qr span{background:#111;border-radius:1px;}
 .pay-qr span:nth-child(3n){background:#fff;}
 .pay-qr span:nth-child(5n){background:#111;}
@@ -511,6 +522,7 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
   .scan-overlay,.pay-overlay,.status-overlay{position:fixed;}
   .pay-overlay,.status-overlay{align-items:center;justify-content:center;}
   .pay-panel,.status-panel{max-width:560px;border-radius:14px;}
+  .pay-qr{width:260px;height:260px;border-width:12px;}
   .scan-box{max-width:520px;width:100%;margin-left:auto;margin-right:auto;}
   .scan-manual{max-width:720px;width:100%;margin-left:auto;margin-right:auto;}
   .login-card{width:min(440px,100%);}
@@ -569,6 +581,17 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
   </div>
 </div>
 
+<div class="public-ticket-overlay" id="public-ticket-overlay">
+  <div class="public-ticket-card">
+    <div class="public-ticket-logo"><img src="assets/brand/primary.png" alt="PhoneFix Pro"></div>
+    <div class="public-ticket-title">Status Repair PhoneFix Pro</div>
+    <div class="public-ticket-sub">Semakan khas pelanggan. Tidak perlu login account.</div>
+    <div id="public-ticket-content">
+      <div class="public-status"><span>Sedang sync data ticket...</span><b>Loading</b></div>
+    </div>
+  </div>
+</div>
+
 <div class="app-wrap">
   <div class="toast-w"><div class="toast" id="toast"></div></div>
   <div class="scr">
@@ -608,6 +631,16 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
           <div id="pay-items"></div>
         </div>
         <div class="pay-total"><span>Total perlu dibayar</span><span id="pay-total">RM 0</span></div>
+        <div class="evidence-box">
+          <div class="section-hdr">Bukti Resit Payment</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.45;">Snap atau masukkan gambar resit payment POS sebelum confirm. App akan label dan auto download gambar bukti.</div>
+          <div class="evidence-actions">
+            <button class="sbtn2" onclick="capturePosReceipt()" style="margin:0;">Snap / Pilih Resit</button>
+            <button class="sbtn2" onclick="clearPosReceipt()" style="margin:0;">Clear</button>
+          </div>
+          <input class="import-file" type="file" id="pos-receipt-file" accept="image/*" capture="environment" onchange="loadPosReceipt(this)">
+          <img id="pos-receipt-preview" class="evidence-preview" alt="Preview resit POS">
+        </div>
         <div class="ff"><label>Password account login untuk confirm</label><input type="password" id="pay-pass" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')confirmPayment()"></div>
         <button class="sbtn" onclick="confirmPayment()">Done Payment / Confirm</button>
         <button class="sbtn2" onclick="closePaymentModal()">Cancel</button>
@@ -1163,6 +1196,10 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
           <button class="sbtn2" onclick="document.getElementById('db-import').click()">Import Database Lama</button>
           <input class="import-file" type="file" id="db-import" accept="application/json,.json" onchange="importDB(this)">
         </div>
+        <div class="card admin-only rpt-card rpt-audit-card">
+          <h3>Audit Log</h3>
+          <div id="audit-log-list"></div>
+        </div>
         <div class="pill-row rpt-period" id="rpt-main-period">
           <div class="pill on" onclick="setPill(this,'rpt-main-period')" id="rm-daily">Harian</div>
           <div class="pill" onclick="setPill(this,'rpt-main-period')" id="rm-weekly">Mingguan</div>
@@ -1185,9 +1222,7 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
         </div>
         <div class="card rpt-card rpt-tech-card">
           <h3 id="lbl-rpt2-tech">Prestasi Technician</h3>
-          <div class="dr"><span class="dl">Hafiz</span><span id="lbl-r2-hafiz" class="dv">22 repair · RM 5,720</span></div>
-          <div class="dr"><span class="dl">Razif</span><span id="lbl-r2-razif" class="dv">18 repair · RM 4,680</span></div>
-          <div class="dr"><span class="dl">Amirul</span><span id="lbl-r2-amirul" class="dv">8 repair · RM 2,080</span></div>
+          <div id="tech-performance-list"></div>
         </div>
         <div class="card rpt-card rpt-profit-card">
           <h3 id="lbl-rpt2-profit">Analisis Untung</h3>
@@ -1224,6 +1259,12 @@ body.theme-light .stk-row{color:var(--color-text-primary);}
       </div>
       <div class="sa">
         <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t">Staff Report</div><div class="ai-c">Hantar report kepada admin jika tersilap nama client, salah order, perlu tanya sesuatu, atau ada isu kerja.</div></div>
+        <div class="card">
+          <h3>Cloud Sync Multi Device</h3>
+          <div class="ai-box" style="margin-bottom:8px;"><div class="ai-t">Auto Firebase</div><div class="ai-c">Staff boleh semak sama ada data latest sudah sync dengan database kedai.</div></div>
+          <div class="dr"><span class="dl"><span class="sync-dot" id="staff-sync-dot"></span>Status sync</span><span class="dv" id="staff-sync-status">Offline local</span></div>
+          <button class="sbtn" onclick="connectCloud()">Reconnect Sync</button>
+        </div>
         <div class="card">
           <h3>Report Baru</h3>
           <div class="ff"><label>Jenis report</label><select id="sr-type"><option>Silap nama client</option><option>Silap order / item</option><option>Masalah ticket</option><option>Masalah payment</option><option>Stok / barcode</option><option>Pertanyaan</option><option>Lain-lain</option></select></div>
@@ -1335,9 +1376,12 @@ var custs=[];
 var curCust=null;
 var reviews=[];
 var curStar=0;
+var publicReviewStar=0;
 var photos={};
 var sales=[];
 var staffReports=[];
+var auditLogs=[];
+var pendingSyncCount=0;
 var STORE_KEY='phonefix-pro-v13-clean';
 var THEME_KEY='phonefix-pro-theme';
 var learnFilter='all';
@@ -1348,7 +1392,8 @@ var pendingEvidenceRaw='';
 var pendingEvidenceLabeled='';
 var pendingDepositReceiptRaw='';
 var pendingFullReceiptRaw='';
-var APP_TEST_URL='http://127.0.0.1:5174/index.html';
+var pendingPosReceiptRaw='';
+var APP_TEST_URL='http://127.0.0.1:5175/index.html';
 var SESSION_KEY='phonefix-pro-session';
 var CLOUD_CONFIG_KEY='phonefix-pro-cloud-config';
 var FORCE_DEFAULT_CLOUD_CONFIG=true;
@@ -1405,6 +1450,8 @@ function loadState(){
     if(s.photos)photos=s.photos;
     if(Array.isArray(s.sales))sales=s.sales;
     if(Array.isArray(s.staffReports))staffReports=s.staffReports;
+    if(Array.isArray(s.auditLogs))auditLogs=s.auditLogs;
+    if(s.pendingSyncCount)pendingSyncCount=s.pendingSyncCount;
     if(s.paymentSettings)paymentSettings=s.paymentSettings;
     curTk=tickets[0]||null;curCust=custs[0]||null;
     normalizePaymentSettings();normalizeData();
@@ -1484,7 +1531,7 @@ function signupUser(){
   if(USERS[email]){toast('Account ini sudah wujud. Sila login.');showLoginForm();return;}
   var existing=signupRequests.find(function(r){return r.email===email&&r.status==='pending';});
   if(existing){showPendingMessage('Your request has been pending. Tunggu admin approve account anda.');return;}
-  signupRequests.unshift({id:'REQ-'+Date.now(),name:name,email:email,password:pass,status:'pending',requestedAt:new Date().toISOString()});
+  signupRequests.unshift({id:'REQ-'+Date.now(),name:name,email:email,password:pass,status:'pending',requestedAt:new Date().toISOString(),updatedAt:Date.now()});
   saveState();renderAccountRequests();showPendingMessage('Your request has been pending. Tunggu admin approve account anda.');
 }
 function logoutUser(){
@@ -1497,7 +1544,7 @@ function applyRoleAccess(){
   ['pr-cost','sv-cost','pk-cost'].forEach(function(id){var el=document.getElementById(id);if(el&&el.closest('.ff'))el.closest('.ff').classList.toggle('staff-hidden',role!=='admin');});
   var navRpt=document.getElementById('nav-laporan');if(navRpt)navRpt.textContent=role==='admin'?'Laporan':'Report';
   if(role!=='admin'&&document.querySelector('.pg.act')&&document.querySelector('.pg.act').id==='p-laporan')goTab('laporan');
-  renderPOS();renderAllItems();renderStock();updateMetrics();
+  renderTechnicianOptions();renderPOS();renderAllItems();renderStock();updateMetrics();
   renderStaffReports();renderAccountRequests();
 }
 function requireAdmin(){
@@ -1613,12 +1660,14 @@ function approveSignup(id){
   var role='staff';
   USERS[r.email]={pin:r.password,role:role,name:r.name,email:r.email,status:'approved',approvedAt:new Date().toISOString(),approvedBy:currentUser&&currentUser.username};
   r.status='approved';r.role=role;r.approvedAt=new Date().toISOString();r.approvedBy=currentUser&&currentUser.username;
-  saveState();renderAccountRequests();toast('Account approved sebagai '+role+'.');
+  addAudit('Approve account',r.email,'Role staff diluluskan untuk '+r.name);
+  saveState();renderAccountRequests();renderTechnicianOptions();renderTechnicianPerformance();toast('Account approved sebagai '+role+'.');
 }
 function rejectSignup(id){
   if(!requireAdmin())return;
   var r=signupRequests.find(function(x){return x.id===id;});if(!r)return;
   r.status='rejected';r.rejectedAt=new Date().toISOString();r.rejectedBy=currentUser&&currentUser.username;
+  addAudit('Reject account',r.email,'Request profile ditolak untuk '+r.name);
   saveState();renderAccountRequests();toast('Request ditolak.');
 }
 function renderPaymentSettingPreview(){
@@ -1681,6 +1730,31 @@ function updateMetrics(){
   if(netEl)netEl.textContent='RM '+net.toLocaleString('ms-MY');
   if(margin)margin.textContent=(monthRevenue?Math.round(net/monthRevenue*100):0)+'%';
   var db=document.getElementById('db-size');if(db)db.textContent=Math.round((localStorage.getItem(STORE_KEY)||'').length/1024)+' KB';
+  renderTechnicianPerformance();
+}
+function uniqList(list){
+  var seen={};return (list||[]).map(function(v){return String(v||'').trim();}).filter(function(v){if(!v||seen[v.toLowerCase()])return false;seen[v.toLowerCase()]=true;return true;});
+}
+function technicianNames(){
+  var userNames=Object.keys(USERS||{}).map(function(k){var u=USERS[k];return u&&u.status!=='rejected'&&(u.role==='staff'||u.role==='admin')?(u.name||u.email||k):'';});
+  var ticketNames=tickets.map(function(t){return t.tc||'';});
+  return uniqList(userNames.concat(ticketNames).concat(['Hafiz','Razif','Amirul'])).filter(function(n){return n!=='Admin';});
+}
+function renderTechnicianOptions(){
+  var sel=document.getElementById('f-tc');if(!sel)return;
+  var cur=sel.value;
+  var names=technicianNames();
+  sel.innerHTML=names.map(function(n){return '<option>'+cleanTxt(n)+'</option>';}).join('');
+  if(cur&&names.some(function(n){return n===cur;}))sel.value=cur;
+}
+function renderTechnicianPerformance(){
+  var el=document.getElementById('tech-performance-list');if(!el)return;
+  var names=technicianNames();
+  el.innerHTML=names.map(function(n){
+    var list=tickets.filter(function(t){return (t.tc||'')===n;});
+    var total=list.reduce(function(sum,t){return sum+moneyNum(t.pr);},0);
+    return '<div class="dr"><span class="dl">'+cleanTxt(n)+'</span><span class="dv">'+list.length+' repair · RM '+total.toLocaleString('ms-MY')+'</span></div>';
+  }).join('')||'<div style="font-size:10px;color:var(--color-text-tertiary);padding:4px 0;">Belum ada technician.</div>';
 }
 function updateCustomerFromTicket(tk,phone){
   var c=custs.find(function(x){return x.nm.toLowerCase()===tk.nm.toLowerCase();});
@@ -1703,11 +1777,11 @@ function reduceStockForCart(){
 }
 function currentState(){
   normalizePaymentSettings();
-  return {version:'1.5-clean',exportedAt:new Date().toISOString(),updatedAt:Date.now(),updatedBy:currentUser?currentUser.username:'local',lang:lang,users:USERS,signupRequests:signupRequests,tickets:tickets,nextId:nextId,posItems:posItems,stocks:stocks,custs:custs,reviews:reviews,photos:photos,sales:sales,staffReports:staffReports,paymentSettings:paymentSettings};
+  return {version:'1.6-offline-audit-review',exportedAt:new Date().toISOString(),updatedAt:Date.now(),updatedBy:currentUser?currentUser.username:'local',lang:lang,users:USERS,signupRequests:signupRequests,tickets:tickets,nextId:nextId,posItems:posItems,stocks:stocks,custs:custs,reviews:reviews,photos:photos,sales:sales,staffReports:staffReports,auditLogs:auditLogs,pendingSyncCount:pendingSyncCount,paymentSettings:paymentSettings};
 }
 function setSyncStatus(text,state){
-  var s=document.getElementById('sync-status');if(s)s.textContent=text;
-  var d=document.getElementById('sync-dot');if(d){d.classList.toggle('on',state==='on');d.classList.toggle('err',state==='err');}
+  ['sync-status','staff-sync-status'].forEach(function(id){var s=document.getElementById(id);if(s)s.textContent=text;});
+  ['sync-dot','staff-sync-dot'].forEach(function(id){var d=document.getElementById(id);if(d){d.classList.toggle('on',state==='on');d.classList.toggle('err',state==='err');}});
 }
 function loadCloudConfig(){
   try{cloudConfig=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null');}catch(e){cloudConfig=null;}
@@ -1761,7 +1835,7 @@ function startCloudListener(){
   if(cloudUnsub)cloudUnsub();
   var ref=cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main');
   cloudUnsub=ref.onSnapshot(function(doc){
-    if(!doc.exists){setSyncStatus('Cloud ready - belum ada data','on');return;}
+    if(!doc.exists){setSyncStatus('Cloud ready - belum ada data','on');if(pendingSyncCount&&currentUser)pushCloudNow(true);return;}
     var remote=doc.data().state;if(!remote)return;
     if(applyingCloud)return;
     if((remote.updatedAt||0)>lastCloudAt&&remote.updatedBy!==(currentUser&&currentUser.username)){
@@ -1769,23 +1843,60 @@ function startCloudListener(){
     }
     lastCloudAt=Math.max(lastCloudAt,remote.updatedAt||0);
     setSyncStatus('Cloud synced','on');
+    if(pendingSyncCount&&currentUser)pushCloudNow(true);
   },function(){setSyncStatus('Cloud error - semak rules/config','err');});
   setSyncStatus('Cloud connecting...','on');
 }
 function applyCloudState(s){
   applyingCloud=true;
-  var localPending=signupRequests.filter(function(r){return r.status==='pending';});
-  USERS=s.users?Object.assign(defaultUsers(),s.users):USERS;signupRequests=s.signupRequests||signupRequests;tickets=s.tickets||tickets;nextId=s.nextId||nextId;posItems=s.posItems||posItems;stocks=s.stocks||stocks;custs=s.custs||custs;reviews=s.reviews||reviews;photos=s.photos||photos;sales=s.sales||sales;staffReports=s.staffReports||staffReports;paymentSettings=s.paymentSettings||paymentSettings;lang=s.lang||lang;
-  localPending.forEach(function(r){
-    if(!signupRequests.some(function(x){return x.email===r.email;}))signupRequests.unshift(r);
-  });
+  USERS=mergeUsersSafe(USERS,s.users);
+  signupRequests=mergeByKey(signupRequests,s.signupRequests,'email');
+  tickets=mergeByKey(tickets,s.tickets,'id');
+  posItems=mergeByKey(posItems,s.posItems,'id');
+  stocks=mergeByKey(stocks,s.stocks,function(x){return x.sku||x.id||x.nm;});
+  custs=mergeByKey(custs,s.custs,function(x){return x.ph||x.nm;});
+  reviews=mergeByKey(reviews,s.reviews,function(x){return (x.date||'')+'-'+(x.nm||'')+'-'+(x.txt||'');});
+  sales=mergeByKey(sales,s.sales,'id');
+  staffReports=mergeByKey(staffReports,s.staffReports,'id');
+  auditLogs=mergeByKey(auditLogs,s.auditLogs,'id').slice(0,120);
+  photos=Object.assign({},s.photos||{},photos||{});
+  nextId=Math.max(Number(nextId||1),Number(s.nextId||1),nextTicketNumber(tickets));
+  paymentSettings=Object.assign({},s.paymentSettings||{},paymentSettings||{});lang=s.lang||lang;
   curTk=tickets[0]||null;curCust=custs[0]||null;normalizePaymentSettings();normalizeData();
-  localStorage.setItem(STORE_KEY,JSON.stringify(s));
-  syncLangButtons();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();
+  localStorage.setItem(STORE_KEY,JSON.stringify(currentState()));
+  syncLangButtons();renderTechnicianOptions();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();renderAuditLog();updateMetrics();applyRoleAccess();renderPublicTicketStatus();
   applyingCloud=false;toast('Data cloud terbaru dimuat.');
+  if(currentUser)scheduleCloudPush();
+}
+function mergeUsersSafe(localUsers,remoteUsers){
+  var merged=Object.assign(defaultUsers(),remoteUsers||{},localUsers||{});
+  Object.keys(remoteUsers||{}).forEach(function(k){
+    if(!localUsers||!localUsers[k])merged[k]=remoteUsers[k];
+  });
+  return merged;
+}
+function rowStamp(row){return Number(row&&row.updatedAt)||Date.parse(row&&row.date||row&&row.createdAt||row&&row.requestedAt||row&&row.approvedAt||0)||0;}
+function mergeByKey(localArr,remoteArr,key){
+  var map={};
+  function kOf(x){return typeof key==='function'?key(x):x&&x[key];}
+  (remoteArr||[]).forEach(function(x){var k=kOf(x);if(k)map[k]=x;});
+  (localArr||[]).forEach(function(x){var k=kOf(x);if(!k)return;var old=map[k];map[k]=!old||rowStamp(x)>=rowStamp(old)?x:old;});
+  return Object.keys(map).map(function(k){return map[k];});
+}
+function nextTicketNumber(list){
+  return (list||[]).reduce(function(max,t){
+    var n=parseInt(String(t.id||'').replace(/\D/g,''),10)||0;
+    return Math.max(max,n+1);
+  },1);
 }
 function scheduleCloudPush(){
-  if(applyingCloud||!cloudDb||!cloudConfig)return;
+  if(applyingCloud)return;
+  if(!currentUser)return;
+  if(!cloudDb||!cloudConfig){
+    pendingSyncCount=Math.max(1,pendingSyncCount+1);
+    setSyncStatus('Offline queue: '+pendingSyncCount+' update','err');
+    return;
+  }
   clearTimeout(syncTimer);
   syncTimer=setTimeout(function(){pushCloudNow(true);},900);
 }
@@ -1794,6 +1905,7 @@ function pushCloudNow(silent){
   if(!cloudDb||!cloudConfig){if(!silent)toast('Cloud belum connected. Tekan Reconnect Sync atau semak internet.');return;}
   var state=currentState();lastCloudAt=state.updatedAt;
   cloudDb.collection('phonefixPro').doc(cloudConfig.docId||'lubuk-it-main').set({state:state,updatedAt:state.updatedAt},{merge:true}).then(function(){
+    pendingSyncCount=0;
     setSyncStatus('Uploaded '+new Date().toLocaleTimeString('ms-MY'),'on');if(!silent)toast('Data diupload ke cloud.');
   }).catch(function(){setSyncStatus('Upload gagal','err');if(!silent)toast('Upload gagal. Semak internet/rules Firebase.');});
 }
@@ -1883,6 +1995,67 @@ function trackerLink(){
   if(location.protocol==='file:')return APP_TEST_URL+'#ticket='+id;
   return location.origin+location.pathname+'#ticket='+id;
 }
+function publicTicketId(){
+  var m=String(location.hash||'').match(/ticket=([^&]+)/);
+  return m?decodeURIComponent(m[1]):'';
+}
+function isPublicTicketMode(){return !!publicTicketId();}
+function renderPublicTicketStatus(){
+  var ov=document.getElementById('public-ticket-overlay');if(!ov)return false;
+  var id=publicTicketId();
+  if(!id){ov.classList.remove('on');return false;}
+  hideLogin();
+  ov.classList.add('on');
+  var el=document.getElementById('public-ticket-content');if(!el)return true;
+  var tk=tickets.find(function(t){return t.id===id;});
+  var sn=stNM[lang]||stNM.my;
+  if(!tk){
+    el.innerHTML='<div class="public-status"><span>Sedang sync database kedai...</span><b>Loading</b></div><div class="public-detail"><div class="dr"><span class="dl">No Ticket</span><span class="dv">'+cleanTxt(id)+'</span></div><div style="font-size:12px;color:var(--color-text-secondary);line-height:1.5;">Jika masih loading, staff mungkin belum upload data terbaru ke cloud.</div></div>';
+    return true;
+  }
+  var paid=moneyNum(tk.pr)-moneyNum(tk.dp);
+  var reviewBox='';
+  if(tk.st==='del'){
+    if(tk.publicReview){
+      reviewBox='<div class="public-detail"><div class="section-hdr">Review</div><div style="font-size:12px;color:var(--color-text-primary);line-height:1.5;"><b>Terima kasih!</b><br>Review anda sudah diterima. Bonus warranty 30 hari telah direkod dalam sistem.</div></div>';
+    }else{
+      reviewBox='<div class="public-detail"><div class="section-hdr">Review & Bonus Warranty</div><div style="font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:8px;">Jika anda berpuas hati, beri review untuk bantu PhoneFix Pro. Selepas submit, kami rekod bonus warranty tambahan 30 hari percuma untuk ticket ini.</div><div style="display:flex;gap:5px;margin-bottom:8px;" id="public-star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star" onclick="setPublicReviewStar('+n+')">★</span>';}).join('')+'</div><textarea id="public-review-text" placeholder="Contoh: Servis kemas, cepat dan staff explain dengan jelas. Recommended!" style="width:100%;padding:9px 10px;border-radius:8px;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:12px;color:var(--color-text-primary);font-family:var(--font-sans);min-height:70px;resize:none;margin-bottom:8px;"></textarea><button class="sbtn" onclick="submitPublicReview(&quot;'+cleanTxt(tk.id)+'&quot;)">Submit Review & Claim Warranty 30 Hari</button></div>';
+    }
+  }
+  el.innerHTML='<div class="public-status"><span>Status sekarang</span><b>'+cleanTxt(sn[tk.st]||tk.st)+'</b></div>'+
+    '<div class="public-detail">'+
+    '<div class="dr"><span class="dl">No Ticket</span><span class="dv">'+cleanTxt(tk.id)+'</span></div>'+
+    '<div class="dr"><span class="dl">Nama</span><span class="dv">'+cleanTxt(tk.nm)+'</span></div>'+
+    '<div class="dr"><span class="dl">Peranti</span><span class="dv">'+cleanTxt(tk.dev)+'</span></div>'+
+    '<div class="dr"><span class="dl">Masalah</span><span class="dv">'+cleanTxt(tk.prb)+'</span></div>'+
+    '<div class="dr"><span class="dl">Technician</span><span class="dv">'+cleanTxt(tk.tc||'Belum assign')+'</span></div>'+
+    '<div class="dr"><span class="dl">Deposit</span><span class="dv">'+cleanTxt(tk.dp||'RM 0')+'</span></div>'+
+    '<div class="dr"><span class="dl">Baki anggaran</span><span class="dv">RM '+Math.max(0,paid).toLocaleString('ms-MY')+'</span></div>'+
+    '<div class="dr"><span class="dl">Jumlah</span><span class="dv">'+cleanTxt(tk.pr||'RM 0')+'</span></div>'+
+    '</div>'+
+    reviewBox+
+    '<button class="sbtn" onclick="renderPublicTicketStatus()" style="margin-top:10px;">Refresh Status</button>';
+  return true;
+}
+function setPublicReviewStar(n){
+  publicReviewStar=n;
+  document.querySelectorAll('#public-star-row .star').forEach(function(s,i){s.classList.toggle('on',i<n);});
+}
+function submitPublicReview(ticketId){
+  var tk=tickets.find(function(t){return t.id===ticketId;});
+  if(!tk){toast('Ticket tidak dijumpai.');return;}
+  if(!publicReviewStar){toast('Pilih rating bintang dahulu.');return;}
+  var txt=((document.getElementById('public-review-text')||{}).value||'').trim()||'Servis PhoneFix Pro sangat baik dan recommended.';
+  var review={id:'RV-'+Date.now(),nm:tk.nm,star:publicReviewStar,txt:txt,date:new Date().toISOString(),ticket:tk.id,source:'public-status',warrantyBonusDays:30,updatedAt:Date.now()};
+  reviews.unshift(review);
+  tk.publicReview=review;
+  tk.updatedAt=Date.now();
+  addAudit('Customer review',tk.id,publicReviewStar+' star · bonus warranty 30 hari');
+  renderReviews();renderPublicTicketStatus();
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(currentState()));}catch(e){}
+  if(cloudDb&&cloudConfig)pushCloudNow(true);else pendingSyncCount=Math.max(1,pendingSyncCount+1);
+  toast('Terima kasih! Review diterima dan warranty tambahan 30 hari direkod.');
+}
 function copyQR(){copyText(trackerLink(),'qr_copied');}
 function printQR(){
   var sn=stNM[lang]||stNM.my;var d=curTk||tickets[0];
@@ -1955,14 +2128,37 @@ function submitStaffReport(){
     by:(currentUser&&currentUser.name)||'Staff',
     byUser:(currentUser&&currentUser.username)||'staff',
     date:new Date().toISOString(),
+    updatedAt:Date.now(),
     status:'open',
     feedback:''
   };
   staffReports.unshift(rep);
+  addAudit('Staff report',rep.ref||rep.id,rep.type);
   ['sr-ref','sr-msg'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   renderStaffReports();saveState();toast('Report dihantar kepada admin.');
 }
 function reportDate(iso){try{return new Date(iso).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});}catch(e){return '-';}}
+function addAudit(action,ref,detail){
+  auditLogs.unshift({
+    id:'AUD-'+Date.now()+'-'+Math.random().toString(16).slice(2,6),
+    action:action,
+    ref:ref||'',
+    detail:detail||'',
+    by:(currentUser&&currentUser.name)||'Public/Customer',
+    byUser:(currentUser&&currentUser.username)||'public',
+    role:(currentUser&&currentUser.role)||'public',
+    date:new Date().toISOString(),
+    updatedAt:Date.now()
+  });
+  auditLogs=auditLogs.slice(0,120);
+  renderAuditLog();
+}
+function renderAuditLog(){
+  var el=document.getElementById('audit-log-list');if(!el)return;
+  el.innerHTML=auditLogs.slice(0,18).map(function(a){
+    return '<div class="dr" style="align-items:flex-start;"><span class="dl"><b>'+cleanTxt(a.action)+'</b>'+(a.ref?' · '+cleanTxt(a.ref):'')+'<br><span class="item-meta">'+cleanTxt(a.detail||'')+'</span><br><span class="item-meta">'+cleanTxt(a.by)+' · '+reportDate(a.date)+'</span></span><span class="bdg b3">'+cleanTxt(a.role||'-')+'</span></div>';
+  }).join('')||'<div class="rpt-empty"><div class="rpt-empty-ico">✓</div><div><b>Audit bersih</b><br><span>Aktiviti penting seperti ticket, payment, approval, report dan review akan muncul di sini.</span></div></div>';
+}
 function renderStaffReports(){
   var staffEl=document.getElementById('staff-report-list');
   if(staffEl){
@@ -1983,13 +2179,13 @@ function renderStaffReports(){
 function saveReportFeedback(id){
   if(!requireAdmin())return;
   var r=staffReports.find(function(x){return x.id===id;});if(!r)return;
-  var el=document.getElementById('fb-'+id);r.feedback=(el&&el.value||'').trim();r.status=r.feedback?'closed':r.status;r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;
+  var el=document.getElementById('fb-'+id);r.feedback=(el&&el.value||'').trim();r.status=r.feedback?'closed':r.status;r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;r.updatedAt=Date.now();addAudit('Reply staff report',r.ref||r.id,r.type);
   renderStaffReports();saveState();toast('Feedback disimpan.');
 }
 function toggleReportClosed(id){
   if(!requireAdmin())return;
   var r=staffReports.find(function(x){return x.id===id;});if(!r)return;
-  r.status=r.status==='closed'?'open':'closed';r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;
+  r.status=r.status==='closed'?'open':'closed';r.repliedAt=new Date().toISOString();r.repliedBy=currentUser&&currentUser.username;r.updatedAt=Date.now();addAudit('Update staff report',r.ref||r.id,r.status);
   renderStaffReports();saveState();
 }
 function renderPhotos(){
@@ -2231,6 +2427,23 @@ function clearFullReceipt(){
   var input=document.getElementById('full-receipt-file');if(input)input.value='';
   var img=document.getElementById('full-receipt-preview');if(img){img.src='';img.classList.remove('on');}
 }
+function capturePosReceipt(){var input=document.getElementById('pos-receipt-file');if(input)input.click();}
+function loadPosReceipt(input){
+  var file=input.files&&input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    pendingPosReceiptRaw=reader.result;
+    var img=document.getElementById('pos-receipt-preview');
+    if(img){img.src=pendingPosReceiptRaw;img.classList.add('on');}
+    toast('Resit POS dimuat. Label akan dijana masa confirm payment.');
+  };
+  reader.readAsDataURL(file);
+}
+function clearPosReceipt(){
+  pendingPosReceiptRaw='';
+  var input=document.getElementById('pos-receipt-file');if(input)input.value='';
+  var img=document.getElementById('pos-receipt-preview');if(img){img.src='';img.classList.remove('on');}
+}
 function toggleCustomTicketFields(){
   var dev=(document.getElementById('f-dev')||{}).value||'';
   var prb=(document.getElementById('f-prb')||{}).value||'';
@@ -2278,6 +2491,18 @@ function buildFullPaymentMeta(ticket){
     stats:[
       {value:ticket.id,label:'Ticket'},
       {value:ticket.pr,label:'Total'},
+      {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
+    ]
+  };
+}
+function buildPosPaymentMeta(summary,receiptId){
+  return {
+    title:'POS Payment',
+    badge:'Paid',
+    subtitle:(summary.items||[]).map(function(i){return i.nm+' x'+i.qty;}).join(', '),
+    stats:[
+      {value:receiptId,label:'Resit'},
+      {value:'RM '+(summary.total||0),label:'Total'},
       {value:new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),label:'Tarikh'}
     ]
   };
@@ -2425,7 +2650,8 @@ async function shareEvidenceImage(ticket){
 
 function cycleStatus(){
   var idx=stCyc.indexOf(curTk.st);curTk.st=stCyc[(idx+1)%4];
-  var tk=tickets.find(function(t){return t.id===curTk.id;});if(tk)tk.st=curTk.st;
+  curTk.updatedAt=Date.now();
+  var tk=tickets.find(function(t){return t.id===curTk.id;});if(tk){tk.st=curTk.st;tk.updatedAt=curTk.updatedAt;}
   openTk(curTk.id);
   toast((MSG[lang]||MSG.my).status_up+(stNM[lang]||stNM.my)[curTk.st]);
   renderTkList();updateMetrics();saveState();
@@ -2465,7 +2691,9 @@ async function confirmStatusUpdate(){
     queueImageDownloads([{data:labeled||pendingFullReceiptRaw,name:'PhoneFix-Pro-Full-Payment-'+curTk.id+'.jpg'}]);
   }
   curTk.st=next;
+  curTk.updatedAt=Date.now();
   var tk=tickets.find(function(t){return t.id===curTk.id;});if(tk){Object.assign(tk,curTk);}
+  addAudit('Update status ticket',curTk.id,'Status: '+sn[curTk.st]);
   closeStatusModal();
   openTk(curTk.id);
   toast((MSG[lang]||MSG.my).status_up+sn[curTk.st]);
@@ -2486,7 +2714,7 @@ async function saveTk(){
   var issueSelect=document.getElementById('f-prb').value;
   var customIssue=((document.getElementById('f-new-issue')||{}).value||'').trim();
   var issue=issueSelect==='Lain-lain'?(customIssue||'Masalah lain'):(issueSelect||customIssue);
-  var tk={id:'TK-0'+nextId++,dev:device,prb:issue,note:document.getElementById('f-nt').value||'—',nm:nm,ph:ph,av:init,avbg:'#ECFFD1',avc:'#1A1A18',tc:document.getElementById('f-tc').value,pr:'RM '+price,dp:'RM '+deposit,st:'new',cost:Math.round(price*0.5),warrantyDays:Number(document.getElementById('f-war').value||30)};
+  var tk={id:'TK-0'+nextId++,dev:device,prb:issue,note:document.getElementById('f-nt').value||'—',nm:nm,ph:ph,av:init,avbg:'#ECFFD1',avc:'#1A1A18',tc:document.getElementById('f-tc').value,pr:'RM '+price,dp:'RM '+deposit,st:'new',cost:Math.round(price*0.5),warrantyDays:Number(document.getElementById('f-war').value||30),updatedAt:Date.now()};
   var downloads=[];
   if(pendingEvidenceRaw){
     var labeled=await generateEvidenceImage(pendingEvidenceRaw,buildEvidenceMeta(tk));
@@ -2504,6 +2732,7 @@ async function saveTk(){
     downloads.push({data:depLabeled||pendingDepositReceiptRaw,name:'PhoneFix-Pro-Deposit-'+tk.id+'.jpg'});
   }
   tickets.unshift(tk);curTk=tk;updateCustomerFromTicket(tk,ph);
+  addAudit('Buka ticket baru',tk.id,tk.nm+' · '+tk.dev+' · '+tk.prb);
   toastM('save_tk');
   ['f-nm','f-ph','f-mod','f-new-model','f-new-issue','f-nt','f-pr','f-dp','f-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-dev').value='iPhone';document.getElementById('f-prb').value='Skrin pecah';toggleCustomTicketFields();
@@ -2535,10 +2764,12 @@ function claimWarranty(ticketId){
     st:'new',
     cost:0,
     warrantyDays:0,
-    claim:{type:'warranty',originalTicket:ticketId||'',status:'pending',createdAt:new Date().toISOString()}
+    claim:{type:'warranty',originalTicket:ticketId||'',status:'pending',createdAt:new Date().toISOString()},
+    updatedAt:Date.now()
   };
   tickets.unshift(tk);
   curTk=tk;
+  addAudit('Warranty claim',tk.id,'Claim dari '+(ticketId||'ticket asal'));
   curCust.hist=curCust.hist||[];
   curCust.hist.unshift(tk.id+': Warranty Claim dari '+(ticketId||'ticket asal')+' — RM 0');
   curCust.last=tk.dev;
@@ -2600,6 +2831,7 @@ function openPaymentModal(summary){
   document.getElementById('pay-items').innerHTML=summary.items.map(function(it){return '<div class="dr"><span class="dl">'+cleanTxt(it.nm)+'<br><span class="item-meta">SKU '+cleanTxt(it.sku)+' · Qty '+it.qty+' x RM '+it.pr+'</span></span><span class="dv">RM '+(it.qty*it.pr)+'</span></div>';}).join('');
   document.getElementById('pay-total').textContent='RM '+summary.total;
   var pass=document.getElementById('pay-pass');if(pass)pass.value='';
+  clearPosReceipt();
   renderPaymentQR();
   var ov=document.getElementById('pay-overlay');if(ov)ov.classList.add('on');
   setTimeout(function(){var p=document.getElementById('pay-pass');if(p)p.focus();},80);
@@ -2607,19 +2839,29 @@ function openPaymentModal(summary){
 function closePaymentModal(){
   var ov=document.getElementById('pay-overlay');if(ov)ov.classList.remove('on');
   pendingCheckout=null;
+  clearPosReceipt();
 }
-function confirmPayment(){
-  if(!pendingCheckout){toast('Tiada payment pending.');return;}
-  if(!currentUser){showLogin();toast('Login dahulu untuk confirm payment.');return;}
+function notifyPaymentError(msg){
+  var ov=document.getElementById('pay-overlay');if(ov)ov.classList.remove('on');
+  toast(msg);
+}
+async function confirmPayment(){
+  if(!pendingCheckout){notifyPaymentError('Tiada payment pending.');return;}
+  if(!pendingPosReceiptRaw){notifyPaymentError('Masukkan gambar resit payment POS dahulu.');return;}
+  if(!currentUser){notifyPaymentError('Login dahulu untuk confirm payment.');showLogin();return;}
   var pass=(document.getElementById('pay-pass')||{}).value||'';
   var user=USERS[currentUser.username];
-  if(!user||user.pin!==pass){toast('Password salah. Payment belum disahkan.');return;}
+  if(!user||user.pin!==pass){notifyPaymentError('Password salah. Payment belum disahkan.');return;}
   var receiptId='RC-'+String(sales.length+1).padStart(4,'0');
+  var labeled=await generateEvidenceImage(pendingPosReceiptRaw,buildPosPaymentMeta(pendingCheckout,receiptId));
   reduceStockForCart();
   normalizePaymentSettings();
-  sales.unshift({id:receiptId,date:new Date().toISOString(),items:pendingCheckout.items,total:pendingCheckout.total,cost:pendingCheckout.cost,profit:pendingCheckout.profit,payment:{method:paymentSettings.type,bank:paymentSettings.bank,account:paymentSettings.account,holder:paymentSettings.holder,qrLabel:paymentSettings.qrLabel,confirmedBy:currentUser.username,confirmedAt:new Date().toISOString()}});
+  sales.unshift({id:receiptId,date:new Date().toISOString(),updatedAt:Date.now(),items:pendingCheckout.items,total:pendingCheckout.total,cost:pendingCheckout.cost,profit:pendingCheckout.profit,payment:{method:paymentSettings.type,bank:paymentSettings.bank,account:paymentSettings.account,holder:paymentSettings.holder,qrLabel:paymentSettings.qrLabel,confirmedBy:currentUser.username,confirmedAt:new Date().toISOString()},receipt:{raw:pendingPosReceiptRaw,labeled:labeled,createdAt:new Date().toISOString()}});
+  addAudit('POS payment confirm',receiptId,'Total RM '+pendingCheckout.total+' · '+pendingCheckout.items.length+' item');
   cart={};pendingCheckout=null;
   var ov=document.getElementById('pay-overlay');if(ov)ov.classList.remove('on');
+  queueImageDownloads([{data:labeled||pendingPosReceiptRaw,name:'PhoneFix-Pro-POS-Payment-'+receiptId+'.jpg'}]);
+  clearPosReceipt();
   renderPOS();renderStock();updateMetrics();saveState();
   toast('Payment success. Resit '+receiptId+' disimpan.');
 }
@@ -2814,10 +3056,12 @@ function saveProd(){
     if(!stock){stock={nm:nm,nmEN:nm,sku:sku,cat:'acc'};stocks.push(stock);}
     stock.nm=nm;stock.nmEN=nm;stock.sku=sku;stock.qty=parseInt(document.getElementById('pr-qty').value)||0;stock.min=parseInt(document.getElementById('pr-min').value)||5;stock.sell=pr;stock.cost=cost;stock.warrantyDays=war;stock.icon=icon;
     toast('Produk dikemaskini.');
+    addAudit('Edit produk',sku,nm);
   }else{
     posItems.push({id:'px'+Date.now(),sku:sku,nm:nm,nmEN:nm,pr:pr,cost:cost,warrantyDays:war,icon:icon,cat:catKey});
     stocks.push({nm:nm,nmEN:nm,sku:sku,cat:'acc',qty:parseInt(document.getElementById('pr-qty').value)||0,min:parseInt(document.getElementById('pr-min').value)||5,sell:pr,cost:cost,warrantyDays:war,icon:icon});
     toastM('save_prod');
+    addAudit('Tambah produk',sku,nm);
   }
   editingItemId='';resetItemEditLabels();['pr-nm','pr-price','pr-cost','pr-qty','pr-min','pr-brand','pr-sku','pr-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   renderPOS();renderAllItems();renderStock();saveState();goPg('p-pos');
@@ -2831,9 +3075,12 @@ function saveSvc(){
   if(existing){
     existing.nm=nm;existing.nmEN=nm;existing.pr=parseFloat(document.getElementById('sv-price').value)||0;existing.cost=Number(document.getElementById('sv-cost').value||0);existing.warrantyDays=war;existing.icon=document.getElementById('sv-icon').value||'🧰';existing.cat='service';
     toast('Servis dikemaskini.');
+    addAudit('Edit servis',existing.id,nm);
   }else{
-    posItems.push({id:'sx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('sv-price').value)||0,cost:Number(document.getElementById('sv-cost').value||0),warrantyDays:war,icon:document.getElementById('sv-icon').value||'🧰',cat:'service'});
+    var newSvc={id:'sx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('sv-price').value)||0,cost:Number(document.getElementById('sv-cost').value||0),warrantyDays:war,icon:document.getElementById('sv-icon').value||'🧰',cat:'service'};
+    posItems.push(newSvc);
     toastM('save_svc');
+    addAudit('Tambah servis',newSvc.id,nm);
   }
   editingItemId='';resetItemEditLabels();['sv-nm','sv-price','sv-part','sv-cost'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   renderPOS();renderAllItems();saveState();goPg('p-pos');
@@ -2846,9 +3093,12 @@ function savePkg(){
   if(existing){
     existing.nm=nm;existing.nmEN=nm;existing.pr=parseFloat(document.getElementById('pk-price').value)||0;existing.cost=Number(document.getElementById('pk-cost').value||0);existing.warrantyDays=Number(document.getElementById('pk-war').value||30);existing.icon=document.getElementById('pk-icon').value||'🎁';existing.cat='pkg';
     toast('Pakej dikemaskini.');
+    addAudit('Edit pakej',existing.id,nm);
   }else{
-    posItems.push({id:'pkx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('pk-price').value)||0,cost:Number(document.getElementById('pk-cost').value||0),warrantyDays:Number(document.getElementById('pk-war').value||30),icon:document.getElementById('pk-icon').value||'🎁',cat:'pkg'});
+    var newPkg={id:'pkx'+Date.now(),nm:nm,nmEN:nm,pr:parseFloat(document.getElementById('pk-price').value)||0,cost:Number(document.getElementById('pk-cost').value||0),warrantyDays:Number(document.getElementById('pk-war').value||30),icon:document.getElementById('pk-icon').value||'🎁',cat:'pkg'};
+    posItems.push(newPkg);
     toastM('save_pkg');
+    addAudit('Tambah pakej',newPkg.id,nm);
   }
   editingItemId='';resetItemEditLabels();['pk-nm','pk-tag','pk-price','pk-orig','pk-terms','pk-cost','pk-war'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   renderPOS();renderAllItems();saveState();goPg('p-pos');
@@ -2858,7 +3108,8 @@ function renderReviews(){
   var el=document.getElementById('review-list');if(!el)return;
   el.innerHTML=reviews.map(function(r){
     var stars='';for(var i=1;i<=5;i++)stars+='<span style="font-size:13px;color:'+(i<=r.star?'#BA7517':'var(--color-border-secondary)')+';">★</span>';
-    return '<div class="dr"><div><div style="display:flex;align-items:center;gap:5px;"><div class="av" style="width:19px;height:19px;font-size:8px;background:#ECFFD1;color:#1A1A18;">'+r.nm.substring(0,2)+'</div><span style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+r.nm+'</span></div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:2px;">'+r.txt+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:2px;">'+stars+'<span style="font-size:9px;color:var(--color-text-tertiary);">'+r.date+'</span></div></div></div>';
+    var nm=r.nm||'Customer';
+    return '<div class="dr"><div><div style="display:flex;align-items:center;gap:5px;"><div class="av" style="width:19px;height:19px;font-size:8px;background:#ECFFD1;color:#1A1A18;">'+cleanTxt(nm.substring(0,2))+'</div><span style="font-size:11px;font-weight:500;color:var(--color-text-primary);">'+cleanTxt(nm)+'</span></div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:2px;">'+cleanTxt(r.txt||'')+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:2px;">'+stars+'<span style="font-size:9px;color:var(--color-text-tertiary);">'+reportDate(r.date)+'</span></div></div></div>';
   }).join('');
 }
 
@@ -2866,7 +3117,8 @@ function setStar(n){curStar=n;document.querySelectorAll('#star-row .star').forEa
 function submitReview(){
   if(!curStar){toast(lang==='en'?'Please select a rating!':'Pilih bintang dulu!');return;}
   var txt=document.getElementById('rev-txt').value||(lang==='en'?'Great service!':'Bagus!');
-  reviews.unshift({nm:lang==='en'?'You':'Anda',star:curStar,txt:txt,date:lang==='en'?'Today':'Hari ini'});
+  reviews.unshift({id:'RV-'+Date.now(),nm:lang==='en'?'You':'Anda',star:curStar,txt:txt,date:new Date().toISOString(),updatedAt:Date.now(),source:'admin-report'});
+  addAudit('Manual review',curStar+' star',txt);
   renderReviews();document.getElementById('rev-txt').value='';curStar=0;
   document.querySelectorAll('#star-row .star').forEach(function(s){s.classList.remove('on');});
   saveState();toastM('review_ok');
@@ -2875,7 +3127,8 @@ function submitReview(){
 loadState();loadSession();normalizePaymentSettings();normalizeData();syncLangButtons();loadThemeMode();loadCloudConfig();
 genQR();setInterval(genQR,3000);
 toggleCustomTicketFields();
-renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();updateMetrics();applyRoleAccess();if(currentUser){hideLogin();goTab('ticket');}else showLogin();if(cloudConfig)connectCloud();saveState();
+renderTechnicianOptions();renderTkList();renderPOS();renderAllItems();renderStock();renderCusts();renderReviews();renderPhotos();renderLearn();renderStaffReports();renderAccountRequests();renderAuditLog();updateMetrics();applyRoleAccess();if(isPublicTicketMode()){hideLogin();renderPublicTicketStatus();}else if(currentUser){hideLogin();goTab('ticket');}else showLogin();if(cloudConfig)connectCloud();saveState();
+window.addEventListener('hashchange',function(){if(isPublicTicketMode())renderPublicTicketStatus();});
 
 setTimeout(function(){
   var s=document.getElementById('splash');
